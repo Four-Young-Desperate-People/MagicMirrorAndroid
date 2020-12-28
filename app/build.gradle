@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation "io.reactivex.rxjava3:rxjava:3.0.8"
     testImplementation 'junit:junit:4.+'
+    testImplementation "org.mockito:mockito-core:3.6.28"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
