@@ -12,6 +12,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
+//        Button btnInstantAlarm =(Button)findViewById(R.id.instantAlarmButton);
+//        btnInstantAlarm.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                Log.e(TAG, "onClick: HELLO WORLD");
+//            }
+//        });
+//        startActivity(new Intent(MainActivity.this, AlarmActivity.class));
     }
 
 }

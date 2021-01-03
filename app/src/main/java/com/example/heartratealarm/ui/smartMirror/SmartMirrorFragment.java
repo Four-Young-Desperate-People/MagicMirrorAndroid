@@ -1,4 +1,4 @@
-package com.example.heartratealarm.ui.dashboard;
+package com.example.heartratealarm.ui.smartMirror;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,27 +6,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.R;
 
-public class DashboardFragment extends Fragment {
+public class SmartMirrorFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
+    private SmartMirrorViewModel smartMirrorViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+        smartMirrorViewModel =
+                new ViewModelProvider(this).get(SmartMirrorViewModel.class);
         View root = inflater.inflate(R.layout.fragment_smart_mirror, container, false);
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-            }
-        });
         return root;
     }
 }
