@@ -11,18 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="NEW ALARM BUT IN 10 SECONDS"
+        android:text="QUICK ALARM"
         app:layout_constraintBottom_toTopOf="@+id/newAlarmButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/instantAlarmButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="RUN ALARM"
-        app:layout_constraintBottom_toTopOf="@+id/testAlarmButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -36,4 +26,20 @@
         android:src="@drawable/ic_baseline_add_alarm_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextClock
+        android:id="@+id/currTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:ems="10"
+        android:inputType="time"
+        android:linksClickable="false"
+        android:longClickable="false"
+        android:textAlignment="center"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
