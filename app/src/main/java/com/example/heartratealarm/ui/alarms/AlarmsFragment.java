@@ -1,11 +1,12 @@
 package com.example.heartratealarm.ui.alarms;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,11 +14,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.Alarm;
+import com.example.heartratealarm.NewAlarmActivity;
 import com.example.heartratealarm.R;
 
 import java.util.Calendar;
 
-public class AlarmsFragment extends Fragment implements View.OnClickListener{
+public class AlarmsFragment extends Fragment implements View.OnClickListener {
 
     private AlarmsViewModel alarmsViewModel;
 
@@ -28,19 +30,32 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener{
         alarmsViewModel =
                 new ViewModelProvider(this).get(AlarmsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_alarms, container, false);
-        Button btnTestAlarm = (Button) root.findViewById(R.id.testAlarmButton);
-        btnTestAlarm.setOnClickListener(this);
+        root.findViewById(R.id.testAlarmButton).setOnClickListener(this);
+        root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
 
         return root;
     }
 
     @Override
     public void onClick(View view) {
-        Context context = requireActivity().getApplicationContext();
-        Calendar alarmTime = Calendar.getInstance();
-        alarmTime.add(Calendar.SECOND, 30);
-        String toastText = "Setting alarm for " + alarmTime.getTime().toString();
-        Toast.makeText(context, toastText, Toast.LENGTH_LONG).show();
-        Alarm alarm = new Alarm(alarmTime);
+//      TODO: Android says that Resource IDs will be non-final, recommends using if-else?
+        switch (view.getId()) {
+            case R.id.testAlarmButton:
+                Context context = requireActivity().getApplicationContext();
+                Calendar alarmTime = Calendar.getInstance();
+                alarmTime.add(Calendar.SECOND, 10);
+                String toastText = "Setting alarm for " + alarmTime.getTime().toString();
+                Toast.makeText(context, toastText, Toast.LENGTH_LONG).show();
+                Alarm alarm = new Alarm(alarmTime);
+                alarm.setAlarm(requireActivity());
+                break;
+            case R.id.newAlarmButton:
+                Log.d(TAG, "newAlarmButton Pressed, switching to NewAlarm Activity");
+                Intent intent = new Intent(requireActivity(), NewAlarmActivity.class);
+                startActivity(intent);
+                break;
+
+        }
+
     }
 }
