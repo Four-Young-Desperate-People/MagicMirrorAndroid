@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.Alarm;
-import com.example.heartratealarm.NewAlarmActivity;
+import com.example.heartratealarm.EditAlarmActivity;
 import com.example.heartratealarm.R;
 
 import java.util.Calendar;
@@ -51,7 +51,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.newAlarmButton:
                 Log.d(TAG, "newAlarmButton Pressed, switching to NewAlarm Activity");
-                Intent intent = new Intent(requireActivity(), NewAlarmActivity.class);
+                Intent intent = new Intent(requireActivity(), EditAlarmActivity.class);
                 startActivity(intent);
                 break;
 
