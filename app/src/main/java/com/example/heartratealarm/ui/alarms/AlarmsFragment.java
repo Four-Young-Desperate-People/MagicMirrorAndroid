@@ -46,8 +46,9 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 alarmTime.add(Calendar.SECOND, 10);
                 String toastText = "Setting alarm for " + alarmTime.getTime().toString();
                 Toast.makeText(context, toastText, Toast.LENGTH_LONG).show();
-                Alarm alarm = new Alarm(alarmTime);
-                alarm.setAlarm(requireActivity());
+                Alarm alarm = new Alarm();
+                alarm.setNextRun(alarmTime);
+                alarm.enableAlarm(requireActivity());
                 break;
             case R.id.newAlarmButton:
                 Log.d(TAG, "newAlarmButton Pressed, switching to NewAlarm Activity");

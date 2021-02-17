@@ -45,7 +45,7 @@ public class EditAlarmActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 
-                startActivityForResult(intent, 1234);
+                startActivityForResult(intent, REQ_PICK_AUDIO);
             }
         });
     }
@@ -53,7 +53,7 @@ public class EditAlarmActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK || requestCode != 1234 || data == null){
+        if (resultCode != RESULT_OK || requestCode != REQ_PICK_AUDIO || data == null){
             return;
         }
         Uri uri = data.getData();
