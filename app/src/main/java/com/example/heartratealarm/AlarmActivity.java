@@ -19,7 +19,7 @@ public class AlarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         context = this;
         setContentView(R.layout.activity_alarm);
-        Button btnDismiss = (Button) this.findViewById(R.id.alarmDismissButton);
+        Button btnDismiss = this.findViewById(R.id.alarmDismissButton);
         btnDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -7,18 +7,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.util.Calendar;
 import java.util.UUID;
 
-public class Alarm{
+@Entity(tableName = "alarms")
+public class Alarm {
     private static final String TAG = "Alarm";
-    private Calendar nextRun;
-    private String id;
-    private boolean vibrate;
-    private String songPath;
-    private boolean enabled;
+    @PrimaryKey
+    @NonNull
+    public String id;
+    @ColumnInfo(name = "next_run")
+    public long nextRun;
+    @ColumnInfo(name = "vibrate")
+    public boolean vibrate;
+    @ColumnInfo(name = "song_path")
+    public String songPath;
+    @ColumnInfo(name = "enabled")
+    public boolean enabled;
 
 
     public Alarm() {
@@ -32,16 +43,16 @@ public class Alarm{
         Intent intent = new Intent(activity, AlarmReceiver.class);
         intent.putExtra("ID", id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 1, intent, 0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextRun.getTimeInMillis(), pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextRun, pendingIntent);
     }
 
-    // Saves the alarm to local server
+    // Saves the alarm to sql
     public void saveAlarm() {
 
     }
 
     // Main logic that is called when the alarm is running, since called from an intent, static
-    static public void runAlarm(Context context, Intent intent){
+    static public void runAlarm(Context context, Intent intent) {
         String alarmID = intent.getExtras().getString(("ID"));
         Log.d(TAG, "runAlarm: Received Alarm ID: " + alarmID);
         // TODO: get alarm information from SQL
@@ -54,35 +65,12 @@ public class Alarm{
         context.startActivity(goToAlarmScreen);
     }
 
-    public void setVibrate(boolean vibrate) {
-        this.vibrate = vibrate;
-    }
-
-    public void setSongPath(String songPath) {
-        this.songPath = songPath;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setNextRun(Calendar nextRun){
-        this.nextRun = nextRun;
-    }
-
-    public Calendar getNextRun() {
-        return nextRun;
+    public void setNextRun(Calendar nextRun) {
+        this.nextRun = nextRun.getTimeInMillis();
     }
 
     public boolean isVibrate() {
         return vibrate;
     }
 
-    public String getSongPath() {
-        return songPath;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
 }
