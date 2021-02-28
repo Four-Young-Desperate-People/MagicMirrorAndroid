@@ -23,8 +23,11 @@ public class AlarmActivity extends AppCompatActivity {
         btnDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: Dismissing alarm");
+                //TODO: dismiss Alarm from Alarm Class
+                Log.d(TAG, "Alarm: Dismissing alarm");
                 Intent intent = new Intent(context, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -34,4 +37,6 @@ public class AlarmActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Do nothing we want to disable the back button here
     }
+
+
 }

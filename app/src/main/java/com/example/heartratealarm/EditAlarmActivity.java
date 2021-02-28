@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat;
 
 public class EditAlarmActivity extends AppCompatActivity {
     public static final int REQ_PICK_AUDIO = 10001;
-    public static final int REQ_PERMS = 10002;
+    public static final int REQ_STORAGE_PERMS = 10002;
     private static final String TAG = "EditAlarmActivity";
 
     @Override
@@ -33,7 +33,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), perms[0]) != PackageManager.PERMISSION_GRANTED) {
             Toast explanation = Toast.makeText(getApplicationContext(), "We need access to your files to play music!", Toast.LENGTH_LONG);
             explanation.show();
-            ActivityCompat.requestPermissions(EditAlarmActivity.this, perms, REQ_PERMS);
+            ActivityCompat.requestPermissions(this, perms, REQ_STORAGE_PERMS);
         }
         btnRingtone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +76,10 @@ public class EditAlarmActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQ_PERMS) {
+        if (requestCode == REQ_STORAGE_PERMS) {
             if (grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-                ActivityCompat.requestPermissions(EditAlarmActivity.this, perms, REQ_PERMS);
+                ActivityCompat.requestPermissions(EditAlarmActivity.this, perms, REQ_STORAGE_PERMS);
                 Toast explanation = Toast.makeText(getApplicationContext(), "Unable to continue making alarm due to permissions", Toast.LENGTH_LONG);
                 explanation.show();
                 Intent intent = new Intent(this, MainActivity.class);

@@ -21,9 +21,8 @@ import java.util.Calendar;
 
 public class AlarmsFragment extends Fragment implements View.OnClickListener {
 
-    private AlarmsViewModel alarmsViewModel;
-
     public static final String TAG = "AlarmsFragment";
+    private AlarmsViewModel alarmsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,6 +31,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         View root = inflater.inflate(R.layout.fragment_alarms, container, false);
         root.findViewById(R.id.testAlarmButton).setOnClickListener(this);
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
+
 
         return root;
     }
@@ -55,8 +55,8 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(requireActivity(), EditAlarmActivity.class);
                 startActivity(intent);
                 break;
-
         }
-
     }
+
+
 }

@@ -5,8 +5,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -33,9 +37,42 @@ public class Alarm {
 
 
     public Alarm() {
-        // TODO: change this to check the SQL and make id an int
+        // TODO: change this to check the SQL, make id an int?
         id = UUID.randomUUID().toString();
 
+    }
+
+    // Main logic that is called when the alarm is running, since called from an intent, static
+    static public void runAlarm(Context context, Intent intent) {
+        // TODO: get rid of this debug text
+        Toast.makeText(context, "ALARM", Toast.LENGTH_SHORT).show();
+
+        String alarmID = intent.getExtras().getString(("ID"));
+        Log.d(TAG, "runAlarm: Received Alarm ID: " + alarmID);
+
+        // TODO: get alarm information from SQL
+        Log.d(TAG, "runAlarm: Searching for alarm...");
+
+        // TODO: this doesn't work for the lock screen just yet
+        // Make a window
+        WindowManager.LayoutParams p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View myView = inflater.inflate(R.layout.activity_alarm, null, false);
+        Button butt = myView.findViewById(R.id.alarmDismissButton);
+        windowManager.addView(myView, p);
+        butt.setOnClickListener(v -> {
+            windowManager.removeView(myView);
+            dismissAlarm(context);
+        });
+    }
+
+    static public void dismissAlarm(Context context) {
+        Log.d(TAG, "Alarm: Dismissing alarm");
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     public void enableAlarm(Activity activity) {
@@ -49,20 +86,6 @@ public class Alarm {
     // Saves the alarm to sql
     public void saveAlarm() {
 
-    }
-
-    // Main logic that is called when the alarm is running, since called from an intent, static
-    static public void runAlarm(Context context, Intent intent) {
-        String alarmID = intent.getExtras().getString(("ID"));
-        Log.d(TAG, "runAlarm: Received Alarm ID: " + alarmID);
-        // TODO: get alarm information from SQL
-        Log.d(TAG, "runAlarm: Searching for alarm...");
-
-        // TODO: test the screen swap
-        PackageManager packageManager = context.getPackageManager();
-        Intent goToAlarmScreen = new Intent(context, AlarmActivity.class);
-        goToAlarmScreen.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(goToAlarmScreen);
     }
 
     public void setNextRun(Calendar nextRun) {
