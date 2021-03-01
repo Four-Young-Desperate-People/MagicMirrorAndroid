@@ -32,6 +32,12 @@ public class Alarm {
     public boolean vibrate;
     @ColumnInfo(name = "song_path")
     public String songPath;
+    @ColumnInfo(name = "alarmVolume")
+    public int alarmVolume;
+    @ColumnInfo(name = "exercise_path")
+    public String exercisePath;
+    @ColumnInfo(name = "exerciseVolume")
+    public int exerciseVolume;
     @ColumnInfo(name = "enabled")
     public boolean enabled;
 
@@ -39,6 +45,11 @@ public class Alarm {
     public Alarm() {
         // TODO: change this to check the SQL, make id an int?
         id = UUID.randomUUID().toString();
+
+    }
+
+    // TODO:
+    public void loadAlarm(String id){
 
     }
 
@@ -53,8 +64,8 @@ public class Alarm {
         // TODO: get alarm information from SQL
         Log.d(TAG, "runAlarm: Searching for alarm...");
 
-        // TODO: this doesn't work for the lock screen just yet
         // Make a window
+        // TODO: this doesn't work for the lock screen just yet
         WindowManager.LayoutParams p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -96,4 +107,17 @@ public class Alarm {
         return vibrate;
     }
 
+    @Override
+    public String toString() {
+        return "Alarm{" +
+                "id='" + id + '\'' +
+                ", nextRun=" + nextRun +
+                ", vibrate=" + vibrate +
+                ", songPath='" + songPath + '\'' +
+                ", alarmVolume=" + alarmVolume +
+                ", exercisePath='" + exercisePath + '\'' +
+                ", exerciseVolume=" + exerciseVolume +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

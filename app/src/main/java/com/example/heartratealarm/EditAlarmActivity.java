@@ -4,11 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -18,9 +17,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.slider.Slider;
+
 public class EditAlarmActivity extends AppCompatActivity {
-    public static final int REQ_PICK_AUDIO = 10001;
-    public static final int REQ_STORAGE_PERMS = 10002;
+    public static final int REQ_PICK_ALARM = 10001;
+    public static final int REQ_PICK_EXERCISE = 10002;
+    public static final int REQ_STORAGE_PERMS = 10003;
     private static final String TAG = "EditAlarmActivity";
 
     @Override
@@ -28,21 +30,50 @@ public class EditAlarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_alarm);
 
-        Button btnRingtone = this.findViewById(R.id.selectRingtone);
+        Alarm alarm = new Alarm();
+        Bundle alarmInfo = getIntent().getExtras();
+        String alarmID;
+        if (alarmInfo != null) {
+            Log.d(TAG, "Editing Alarm");
+            alarmID = alarmInfo.getString("id");
+            alarm.loadAlarm(alarmID);
+        }
+
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (ContextCompat.checkSelfPermission(getApplicationContext(), perms[0]) != PackageManager.PERMISSION_GRANTED) {
             Toast explanation = Toast.makeText(getApplicationContext(), "We need access to your files to play music!", Toast.LENGTH_LONG);
             explanation.show();
             ActivityCompat.requestPermissions(this, perms, REQ_STORAGE_PERMS);
         }
-        btnRingtone.setOnClickListener(new View.OnClickListener() {
+
+        Button btnAlarmSong = this.findViewById(R.id.alarmMusicButton);
+        btnAlarmSong.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, REQ_PICK_ALARM);
+        });
+
+        Button btnExerciseSong = this.findViewById(R.id.select);
+        btnExerciseSong.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, REQ_PICK_EXERCISE);
+        });
+
+        Button btnSave = this.findViewById(R.id.saveButton);
+        btnSave.setOnClickListener(v -> {
+            Log.d(TAG, alarm.toString());
+            alarm.saveAlarm();
+        });
+
+        Slider sliderAlarmVolume = findViewById(R.id.volumeSlider);
+        sliderAlarmVolume.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQ_PICK_AUDIO);
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                alarm.alarmVolume = (int) value;
             }
         });
+
     }
 
     @Override
@@ -57,7 +88,6 @@ public class EditAlarmActivity extends AppCompatActivity {
         String path = null;
         String[] projection = {MediaStore.Audio.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        //Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
 
         if (cursor == null) {
             path = uri.getPath();
@@ -68,9 +98,8 @@ public class EditAlarmActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        Uri GoodUri = Uri.parse("file://" + path);
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, GoodUri);
-        mediaPlayer.start();
+        path = "file://" + path;
+        Log.d(TAG, "onActivityResult: " + path);
     }
 
     @Override

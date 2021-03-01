@@ -30,36 +30,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/saveButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeUntilNextAlarm">
-
-        <Button
-            android:id="@+id/selectRingtone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select Ringtone"
-            android:textAlignment="viewStart" />
-
-        <Switch
-            android:id="@+id/vibrateSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Vibrate" />
-
-    </LinearLayout>
-
     <TextView
         android:id="@+id/timeUntilNextAlarm"
         android:layout_width="wrap_content"
@@ -70,5 +40,102 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timePicker" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeUntilNextAlarm"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:text="Exercise Volume"
+            app:layout_constraintBottom_toBottomOf="@+id/alarmVolumeSlider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/alarmVolumeSlider" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/alarmVolumeSlider"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:value="50"
+            android:valueFrom="0"
+            android:valueTo="100"
+            android:stepSize="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/exerciseMusicButton" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/vibrateSwitch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Vibrate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/alarmMusicButton" />
+
+        <Button
+            android:id="@+id/alarmMusicButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Select Ringtone"
+            android:textAlignment="viewStart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/exerciseMusicButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Exercise Music"
+            android:textAlignment="viewStart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/volumeSlider" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/volumeSlider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:value="50"
+            android:valueFrom="0"
+            android:valueTo="100"
+            android:stepSize="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/vibrateSwitch" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm Volume"
+            app:layout_constraintBottom_toBottomOf="@+id/volumeSlider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/volumeSlider" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.33" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
