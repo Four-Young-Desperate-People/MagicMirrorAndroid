@@ -17,8 +17,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Entity(tableName = "alarms")
 public class Alarm {
@@ -29,27 +32,30 @@ public class Alarm {
     @ColumnInfo(name = "next_run")
     public long nextRun;
     @ColumnInfo(name = "vibrate")
-    public boolean vibrate;
+    public boolean vibrate = false;
     @ColumnInfo(name = "song_path")
     public String songPath;
     @ColumnInfo(name = "alarmVolume")
-    public int alarmVolume;
+    public int alarmVolume = 50;
     @ColumnInfo(name = "exercise_path")
     public String exercisePath;
     @ColumnInfo(name = "exerciseVolume")
-    public int exerciseVolume;
+    public int exerciseVolume = 50;
+    @ColumnInfo(name = "brightness")
+    public int brightness = 50;
     @ColumnInfo(name = "enabled")
     public boolean enabled;
 
 
     public Alarm() {
-        // TODO: change this to check the SQL, make id an int?
         id = UUID.randomUUID().toString();
-
+        Calendar defaultRun = Calendar.getInstance();
+        defaultRun.add(Calendar.DAY_OF_YEAR, 1);
+        this.setNextRun(defaultRun);
     }
 
     // TODO:
-    public void loadAlarm(String id){
+    public void loadAlarm(String id) {
 
     }
 
@@ -95,16 +101,44 @@ public class Alarm {
     }
 
     // Saves the alarm to sql
-    public void saveAlarm() {
-
+    public void saveAlarm(Context context) {
+        Log.d(TAG, "Saving Alarm: " + this.toString());
+        try {
+            AlarmDatabase.getInstance(context).alarmDao().insert(this);
+        } catch (Exception e) {
+            Log.d(TAG, "WE FUCKED UP");
+            Log.d(TAG, e.getMessage());
+        }
     }
 
     public void setNextRun(Calendar nextRun) {
         this.nextRun = nextRun.getTimeInMillis();
     }
 
-    public boolean isVibrate() {
-        return vibrate;
+    public static Calendar findNextRun(int hourOfDay, int minute) {
+        Date currTime = Calendar.getInstance().getTime();
+        Calendar nextTime = Calendar.getInstance();
+        nextTime.setTime(currTime);
+        nextTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        nextTime.set(Calendar.MINUTE, minute);
+        nextTime.set(Calendar.SECOND, 0);
+        nextTime.set(Calendar.MILLISECOND, 0);
+        if (nextTime.getTimeInMillis() < currTime.getTime()) {
+            nextTime.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        Log.d(TAG, "findNextRun: " + nextTime.getTime().toString());
+        return nextTime;
+    }
+
+    public String timeToRun(){
+        long currTime = Calendar.getInstance().getTimeInMillis();
+        long diff = nextRun - currTime;
+        long hours = TimeUnit.MILLISECONDS.toHours(diff);
+        long mins = TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(hours);
+        if (hours == 0 && mins == 0){
+            return "under a minute";
+        }
+        return String.format("%d Hours and %d minutes", hours, mins);
     }
 
     @Override
@@ -117,6 +151,7 @@ public class Alarm {
                 ", alarmVolume=" + alarmVolume +
                 ", exercisePath='" + exercisePath + '\'' +
                 ", exerciseVolume=" + exerciseVolume +
+                ", brightness=" + brightness +
                 ", enabled=" + enabled +
                 '}';
     }
