@@ -10,20 +10,20 @@ import java.util.List;
 
 @Dao
 public interface AlarmDao {
-    // TODO: These may need to be async-ed
-    @Query("SELECT * FROM alarms")
+    // TODO: sort by enabled, then next_run
+    @Query("SELECT * FROM alarms ORDER BY next_run")
     List<Alarm> getAll();
 
     @Insert
     void insert(Alarm alarm);
 
     @Update
-    void updateUser(Alarm alarm);
+    void update(Alarm alarm);
 
     @Delete
     void delete(Alarm alarm);
 
-    @Query("SELECT * FROM alarms WHERE id like :id")
+    @Query("SELECT * FROM alarms WHERE id LIKE :id")
     List<Alarm> getAlarmByID(int id);
 
     @Query("SELECT MAX(id) FROM alarms")

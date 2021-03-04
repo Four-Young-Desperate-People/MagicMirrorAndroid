@@ -22,6 +22,8 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.Calendar;
+
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -36,6 +38,7 @@ public class EditAlarmActivity extends AppCompatActivity {
     private Disposable readerDisposable;
     private Disposable writerDisposable;
     Alarm alarm;
+    boolean updateFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +58,10 @@ public class EditAlarmActivity extends AppCompatActivity {
             Log.d(TAG, "Editing Alarm");
             alarmID = alarmInfo.getInt("id");
             whateverTheFuck = Alarm.loadAlarm(alarmID, getApplicationContext());
+            updateFlag = true;
         } else {
             whateverTheFuck = Single.just(new Alarm());
+            updateFlag = false;
         }
 
         readerDisposable = whateverTheFuck.observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
@@ -153,7 +158,11 @@ public class EditAlarmActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "No Song Selected", Toast.LENGTH_LONG).show();
             } else {
                 alarm.enabled = true;
-                writerDisposable = alarm.saveAlarm(getApplicationContext());
+                if (updateFlag) {
+                    writerDisposable = alarm.updateAlarm(getApplicationContext());
+                } else {
+                    writerDisposable = alarm.saveAlarm(getApplicationContext());
+                }
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -168,6 +177,10 @@ public class EditAlarmActivity extends AppCompatActivity {
         vibrateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.vibrate = isChecked);
 
         TimePicker timePicker = this.findViewById(R.id.timePicker);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(alarm.nextRun);
+        timePicker.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+        timePicker.setMinute(calendar.get(Calendar.MINUTE));
         timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
             alarm.setNextRun(Alarm.findNextRun(hourOfDay, minute));
             timeCountdown.setText("Ring in: " + alarm.timeToRun());

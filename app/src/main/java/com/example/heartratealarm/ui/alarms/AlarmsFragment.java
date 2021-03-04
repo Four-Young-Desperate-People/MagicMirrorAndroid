@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,23 +87,27 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
     public void listAlarms() {
         LinearLayout alarmsList = requireView().findViewById(R.id.alarmsList);
         int count = 0;
+        final float scale = getResources().getDisplayMetrics().density;
         for (Alarm alarm : alarmList) {
             Log.d(TAG, alarm.toString());
             MaterialCardView alarmCard = new MaterialCardView(requireContext());
             LinearLayout cardLayout = new LinearLayout(requireContext());
             cardLayout.setOrientation(LinearLayout.HORIZONTAL);
+            cardLayout.setPadding((int) (8 * scale), (int) (16 * scale), 0, (int) (16 * scale));
+            cardLayout.setGravity(Gravity.CENTER_VERTICAL);
             CheckBox enabled = new CheckBox(requireContext());
             enabled.setActivated(alarm.enabled);
             TextView time = new TextView(requireContext());
             time.setText(DateUtils.formatDateTime(requireContext(), alarm.nextRun, DateUtils.FORMAT_SHOW_TIME));
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+            time.setPadding((int) (8 * scale), 0, 0, 0);
             cardLayout.addView(enabled);
             cardLayout.addView(time);
             alarmCard.addView(cardLayout);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.bottomMargin = 18;
+            params.setMargins(0, 0, 0, (int) (8 * scale));
             alarmCard.setLayoutParams(params);
             alarmCard.setOnClickListener(new View.OnClickListener() {
                 @Override

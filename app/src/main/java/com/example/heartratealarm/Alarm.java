@@ -20,7 +20,6 @@ import androidx.room.PrimaryKey;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Single;
@@ -113,15 +112,26 @@ public class Alarm {
         return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
             AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
             int currMax = alarmDao.getMaxAlarm();
-            if (currMax == 0){
+            if (currMax == 0) {
                 this.id = 100;
-            }else{
+            } else {
                 this.id = currMax + 1;
             }
             Log.d(TAG, "saveAlarm: " + t.toString());
             alarmDao.insert(t);
         }, e -> {
             Log.e(TAG, "saveAlarm: ", e);
+        });
+    }
+
+    // Updates an exiting alarm in sql
+    public Disposable updateAlarm(Context context) {
+        return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
+            AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
+            Log.d(TAG, "updateAlarm: " + t.toString());
+            alarmDao.update(t);
+        }, e -> {
+            Log.e(TAG, "updateAlarm: ", e);
         });
     }
 
