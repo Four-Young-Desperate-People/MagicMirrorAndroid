@@ -1,12 +1,21 @@
 package com.example.heartratealarm.ui.alarms;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.lang.UCharacter;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,15 +23,25 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.Alarm;
+import com.example.heartratealarm.AlarmDatabase;
 import com.example.heartratealarm.EditAlarmActivity;
 import com.example.heartratealarm.R;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.Calendar;
+import java.util.List;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class AlarmsFragment extends Fragment implements View.OnClickListener {
 
-    public static final String TAG = "AlarmsFragment";
+    private static final String TAG = "AlarmsFragment";
     private AlarmsViewModel alarmsViewModel;
+    private List<Alarm> alarmList;
+    private Disposable readerDisposable;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,6 +51,15 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         root.findViewById(R.id.testAlarmButton).setOnClickListener(this);
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
 
+        // populate our list of alarms
+        readerDisposable = Single.just(requireContext()).subscribeOn(Schedulers.io()).map(c ->{
+            return AlarmDatabase.getInstance(c).alarmDao().getAll();
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(l ->{
+            alarmList = l;
+            listAlarms();
+        }, e -> {
+            Log.d(TAG, "onCreateView: ");
+        });
 
         return root;
     }
@@ -58,5 +86,54 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    // TODO: where ya'll fuckin makin the list of all alarms
+    public void listAlarms(){
+        LinearLayout alarmsList = requireView().findViewById(R.id.alarmsList);
+        int count = 0;
+        for (Alarm alarm: alarmList){
+            Log.d(TAG, alarm.toString());
+            MaterialCardView alarmCard = new MaterialCardView(requireContext());
+            LinearLayout cardLayout = new LinearLayout(requireContext());
+            cardLayout.setOrientation(LinearLayout.HORIZONTAL);
+            CheckBox enabled = new CheckBox(requireContext());
+            if (alarm.enabled){
+                enabled.setActivated(true);
+            }else{
+                enabled.setActivated(false);
+            }
+            TextView time = new TextView(requireContext());
+            time.setText(DateUtils.formatDateTime(requireContext(), alarm.nextRun, DateUtils.FORMAT_SHOW_TIME));
+            time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+            cardLayout.addView(enabled);
+            cardLayout.addView(time);
+            alarmCard.addView(cardLayout);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.bottomMargin = 18;
+            alarmCard.setLayoutParams(params);
+            alarmCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: " + alarm.id + " clicked");
+                    Intent intent = new Intent(requireActivity(), EditAlarmActivity.class);
+                    intent.putExtra("id", alarm.id);
+                    startActivity(intent);
+                }
+            });
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) alarmCard.getLayoutParams();
+            alarmsList.addView(alarmCard);
+            count++;
+        }
 
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (readerDisposable != null && !readerDisposable.isDisposed()) {
+            readerDisposable.dispose();
+        }
+    }
 }

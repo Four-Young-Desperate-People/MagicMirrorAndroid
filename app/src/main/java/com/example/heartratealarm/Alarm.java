@@ -17,11 +17,15 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 @Entity(tableName = "alarms")
 public class Alarm {
@@ -54,9 +58,13 @@ public class Alarm {
         this.setNextRun(defaultRun);
     }
 
-    // TODO:
-    public void loadAlarm(String id) {
+    private static List<Alarm> loadAllAlarms(String id, Context context) {
+        return AlarmDatabase.getInstance(context).alarmDao().getAlarmByID(id);
+    }
 
+    // TODO:
+    public static Single<Alarm> loadAlarm(String id, Context context) {
+        return Single.fromCallable(() -> loadAllAlarms(id, context)).subscribeOn(Schedulers.io()).map(l -> l.get(0));
     }
 
     // Main logic that is called when the alarm is running, since called from an intent, static
@@ -101,14 +109,13 @@ public class Alarm {
     }
 
     // Saves the alarm to sql
-    public void saveAlarm(Context context) {
-        Log.d(TAG, "Saving Alarm: " + this.toString());
-        try {
-            AlarmDatabase.getInstance(context).alarmDao().insert(this);
-        } catch (Exception e) {
-            Log.d(TAG, "WE FUCKED UP");
-            Log.d(TAG, e.getMessage());
-        }
+    public Disposable saveAlarm(Context context) {
+        return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
+            Log.d(TAG, "saveAlarm: " + t.toString());
+            AlarmDatabase.getInstance(context).alarmDao().insert(t);
+        }, e -> {
+            Log.e(TAG, "saveAlarm: ", e);
+        });
     }
 
     public void setNextRun(Calendar nextRun) {
@@ -130,12 +137,12 @@ public class Alarm {
         return nextTime;
     }
 
-    public String timeToRun(){
+    public String timeToRun() {
         long currTime = Calendar.getInstance().getTimeInMillis();
         long diff = nextRun - currTime;
         long hours = TimeUnit.MILLISECONDS.toHours(diff);
         long mins = TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(hours);
-        if (hours == 0 && mins == 0){
+        if (hours == 0 && mins == 0) {
             return "under a minute";
         }
         return String.format("%d Hours and %d minutes", hours, mins);
