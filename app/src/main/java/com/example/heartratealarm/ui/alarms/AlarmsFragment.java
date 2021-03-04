@@ -1,9 +1,7 @@
 package com.example.heartratealarm.ui.alarms;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.lang.UCharacter;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -11,9 +9,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,9 +48,9 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
 
         // populate our list of alarms
-        readerDisposable = Single.just(requireContext()).subscribeOn(Schedulers.io()).map(c ->{
+        readerDisposable = Single.just(requireContext()).subscribeOn(Schedulers.io()).map(c -> {
             return AlarmDatabase.getInstance(c).alarmDao().getAll();
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(l ->{
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(l -> {
             alarmList = l;
             listAlarms();
         }, e -> {
@@ -87,20 +83,16 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
     }
 
     // TODO: where ya'll fuckin makin the list of all alarms
-    public void listAlarms(){
+    public void listAlarms() {
         LinearLayout alarmsList = requireView().findViewById(R.id.alarmsList);
         int count = 0;
-        for (Alarm alarm: alarmList){
+        for (Alarm alarm : alarmList) {
             Log.d(TAG, alarm.toString());
             MaterialCardView alarmCard = new MaterialCardView(requireContext());
             LinearLayout cardLayout = new LinearLayout(requireContext());
             cardLayout.setOrientation(LinearLayout.HORIZONTAL);
             CheckBox enabled = new CheckBox(requireContext());
-            if (alarm.enabled){
-                enabled.setActivated(true);
-            }else{
-                enabled.setActivated(false);
-            }
+            enabled.setActivated(alarm.enabled);
             TextView time = new TextView(requireContext());
             time.setText(DateUtils.formatDateTime(requireContext(), alarm.nextRun, DateUtils.FORMAT_SHOW_TIME));
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);

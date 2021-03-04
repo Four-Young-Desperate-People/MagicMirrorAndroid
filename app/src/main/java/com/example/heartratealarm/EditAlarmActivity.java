@@ -25,13 +25,12 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class EditAlarmActivity extends AppCompatActivity {
-    private static final int REQ_PICK_ALARM = 10001;
-    private static final int REQ_PICK_EXERCISE = 10002;
-    private static final int REQ_STORAGE_PERMS = 10003;
+    private static final int REQ_PICK_ALARM = 1;
+    private static final int REQ_PICK_EXERCISE = 2;
+    private static final int REQ_STORAGE_PERMS = 3;
     private static final String TAG = "EditAlarmActivity";
     private AlarmDatabase db;
     private Disposable readerDisposable;
@@ -50,20 +49,20 @@ public class EditAlarmActivity extends AppCompatActivity {
         }
 
         Single<Alarm> whateverTheFuck;
-        String alarmID;
+        int alarmID;
         Bundle alarmInfo = getIntent().getExtras();
         if (alarmInfo != null) {
             Log.d(TAG, "Editing Alarm");
-            alarmID = alarmInfo.getString("id");
+            alarmID = alarmInfo.getInt("id");
             whateverTheFuck = Alarm.loadAlarm(alarmID, getApplicationContext());
         } else {
             whateverTheFuck = Single.just(new Alarm());
         }
 
-        readerDisposable = whateverTheFuck.observeOn(AndroidSchedulers.mainThread()).subscribe(a ->{
+        readerDisposable = whateverTheFuck.observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
             alarm = a;
             magicFunction();
-        }, e ->{
+        }, e -> {
             Log.e(TAG, "onCreate: ", e);
         });
     }

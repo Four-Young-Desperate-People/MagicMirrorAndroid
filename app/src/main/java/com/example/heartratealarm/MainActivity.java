@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
             snackbar.show();
         }
 
-//        Single.just(getApplicationContext()).subscribeOn(Schedulers.io()).subscribe(muhContext ->{
-//            Log.d(TAG, "onCreate: I AM A BREAKPOINT FOR DEBUGGING THE DB");
-//        });
+        Single.just(getApplicationContext()).subscribeOn(Schedulers.io()).subscribe(muhContext ->{
+            Log.d(TAG, "onCreate: I AM A BREAKPOINT FOR DEBUGGING THE DB");
+        });
     }
 
     public class GoToSettings implements View.OnClickListener {

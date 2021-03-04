@@ -24,5 +24,8 @@ public interface AlarmDao {
     void delete(Alarm alarm);
 
     @Query("SELECT * FROM alarms WHERE id like :id")
-    List<Alarm> getAlarmByID(String id);
+    List<Alarm> getAlarmByID(int id);
+
+    @Query("SELECT MAX(id) FROM alarms")
+    int getMaxAlarm();
 }

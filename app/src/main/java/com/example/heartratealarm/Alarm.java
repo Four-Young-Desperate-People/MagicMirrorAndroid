@@ -32,7 +32,7 @@ public class Alarm {
     private static final String TAG = "Alarm";
     @PrimaryKey
     @NonNull
-    public String id;
+    public int id;
     @ColumnInfo(name = "next_run")
     public long nextRun;
     @ColumnInfo(name = "vibrate")
@@ -52,18 +52,17 @@ public class Alarm {
 
 
     public Alarm() {
-        id = UUID.randomUUID().toString();
         Calendar defaultRun = Calendar.getInstance();
         defaultRun.add(Calendar.DAY_OF_YEAR, 1);
         this.setNextRun(defaultRun);
     }
 
-    private static List<Alarm> loadAllAlarms(String id, Context context) {
+    private static List<Alarm> loadAllAlarms(int id, Context context) {
         return AlarmDatabase.getInstance(context).alarmDao().getAlarmByID(id);
     }
 
     // TODO:
-    public static Single<Alarm> loadAlarm(String id, Context context) {
+    public static Single<Alarm> loadAlarm(int id, Context context) {
         return Single.fromCallable(() -> loadAllAlarms(id, context)).subscribeOn(Schedulers.io()).map(l -> l.get(0));
     }
 
@@ -104,15 +103,23 @@ public class Alarm {
         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(activity, AlarmReceiver.class);
         intent.putExtra("ID", id);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 1, intent, 0);
+        // TODO: Request Codes must all be unique
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, id, intent, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextRun, pendingIntent);
     }
 
     // Saves the alarm to sql
     public Disposable saveAlarm(Context context) {
         return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
+            AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
+            int currMax = alarmDao.getMaxAlarm();
+            if (currMax == 0){
+                this.id = 100;
+            }else{
+                this.id = currMax + 1;
+            }
             Log.d(TAG, "saveAlarm: " + t.toString());
-            AlarmDatabase.getInstance(context).alarmDao().insert(t);
+            alarmDao.insert(t);
         }, e -> {
             Log.e(TAG, "saveAlarm: ", e);
         });
