@@ -11,16 +11,21 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.MagicMirrorUISettings;
+import com.example.heartratealarm.ModuleMapping;
 import com.example.heartratealarm.R;
+import com.example.heartratealarm.UIjson;
+import com.google.gson.Gson;
+
+import java.util.Map;
 
 public class SmartMirrorFragment extends Fragment implements View.OnClickListener {
 
-    // TODO: make some form of bidirectional map
     private static final String TAG = "SmartMirrorSettings";
     MagicMirrorUISettings settings = new MagicMirrorUISettings();
     // TODO: temp code, we need to read this in
@@ -65,12 +70,16 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnMirrorSync) {
-            // TODO: HI DOM
+            // TODO: Read in GSON
             return;
         }
         if (v.getId() == R.id.btnSaveMirror) {
-            //TODO: HI DOM, YEET TO MIRROR
-            Log.d(TAG, "Save Mirror: " + settings.toString());
+            ModuleMapping mm = settings.toModuleMapping();
+            Map<String, UIjson> map = mm.map;
+            Gson gson = new Gson();
+            String json = gson.toJson(map);
+            // TODO: YEET TO MIRROR
+            Log.d(TAG, "Save Mirror: " + json);
             Toast.makeText(getContext(), "Saved!", Toast.LENGTH_SHORT).show();
             return;
         }

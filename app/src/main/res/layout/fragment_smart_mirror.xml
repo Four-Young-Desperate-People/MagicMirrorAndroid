@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -186,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -208,7 +208,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -230,7 +230,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </com.google.android.material.card.MaterialCardView>
 
 

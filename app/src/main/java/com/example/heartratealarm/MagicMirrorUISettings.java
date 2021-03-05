@@ -1,12 +1,16 @@
 package com.example.heartratealarm;
 
 
+import android.provider.Contacts;
+
 import com.google.common.collect.BiMap;
+import com.google.common.collect.EnumBiMap;
+import com.google.common.collect.EnumHashBiMap;
 import com.google.common.collect.HashBiMap;
 
-// TODO: needs GSON and underlying logic
+// TODO: Hi Dom: needs GSON
 public class MagicMirrorUISettings {
-    private static final BiMap<Module, String> moduleToString = HashBiMap.create();
+    private static final BiMap<Module, String> moduleToString = EnumHashBiMap.create(Module.class);
 
     static {
         moduleToString.put(Module.COMPLIMENTS, "Compliments");
@@ -15,8 +19,16 @@ public class MagicMirrorUISettings {
         moduleToString.put(Module.CURRENT_WEATHER, "Current Weather");
         moduleToString.put(Module.WEATHER_FORECAST, "Weather Forecast");
     }
+    private static final BiMap<Module, String> moduleToGSONString = EnumHashBiMap.create(Module.class);
 
-    public BiMap<Module, Position> moduleToPosition = HashBiMap.create();
+    static {
+        moduleToGSONString.put(Module.COMPLIMENTS, "compliments");
+        moduleToGSONString.put(Module.CLOCK, "clock");
+        moduleToGSONString.put(Module.NEWS_FEED, "newsfeed");
+        moduleToGSONString.put(Module.CURRENT_WEATHER, "currentweather");
+        moduleToGSONString.put(Module.WEATHER_FORECAST, "weatherforecast");
+    }
+    public BiMap<Module, Position> moduleToPosition = EnumBiMap.create(Module.class, Position.class);
 
     public MagicMirrorUISettings() {
         moduleToPosition.put(Module.COMPLIMENTS, Position.TOP_LEFT);
@@ -79,6 +91,23 @@ public class MagicMirrorUISettings {
     @Override
     public String toString() {
         return moduleToPosition.toString();
+    }
+
+    public ModuleMapping toModuleMapping(){
+        ModuleMapping moduleMapping = new ModuleMapping();
+        for (Module module: Module.values()){
+            UIjson uiJson = new UIjson();
+            Position position = moduleToPosition.get(module);
+            if (position == null){
+                uiJson.visible = "false";
+                uiJson.position = "top_right";
+            }else{
+                uiJson.visible = "true";
+                uiJson.position = moduleToPosition.get(module).toString().toLowerCase();
+            }
+            moduleMapping.map.put(moduleToGSONString.get(module), uiJson);
+        }
+        return moduleMapping;
     }
 }
 
