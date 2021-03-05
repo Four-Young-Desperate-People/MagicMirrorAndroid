@@ -1,49 +1,84 @@
 package com.example.heartratealarm;
 
 
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 // TODO: needs GSON and underlying logic
-class MagicMirrorUISettings {
-    public static final int TOP_LEFT = 0;
-    public static final int TOP_CENTER = 1;
-    public static final int TOP_RIGHT = 2;
-    public static final int MIDDLE_CENTER = 3;
-    public static final int BOTTOM_LEFT = 4;
-    public static final int BOTTOM_CENTER = 5;
-    public static final int BOTTOM_RIGHT = 6;
-    Module[] modules = new Module[7];
+public class MagicMirrorUISettings {
+    private static final BiMap<Module, String> moduleToString = HashBiMap.create();
 
-    public MagicMirrorUISettings() {
-        modules[TOP_CENTER] = Module.COMPLIMENTS;
-        modules[TOP_RIGHT]= Module.CLOCK;
-        modules[MIDDLE_CENTER]= Module.NEWS_FEED;
-        modules[BOTTOM_LEFT] = Module.CURRENT_WEATHER;
-        modules[BOTTOM_RIGHT] = Module.WEATHER_FORECAST;
+    static {
+        moduleToString.put(Module.COMPLIMENTS, "Compliments");
+        moduleToString.put(Module.CLOCK, "Clock");
+        moduleToString.put(Module.NEWS_FEED, "News Feed");
+        moduleToString.put(Module.CURRENT_WEATHER, "Current Weather");
+        moduleToString.put(Module.WEATHER_FORECAST, "Weather Forecast");
     }
 
-    // check for duplicates
-    boolean isValid() {
-        Set<Module> set = new HashSet<>();
-        for (Module module: modules){
-            if (module == null){
-                continue;
-            }
-            if (!set.add(module)){
-                return false;
-            }
+    public BiMap<Module, Position> moduleToPosition = HashBiMap.create();
+
+    public MagicMirrorUISettings() {
+        moduleToPosition.put(Module.COMPLIMENTS, Position.TOP_LEFT);
+        moduleToPosition.put(Module.CLOCK, Position.TOP_RIGHT);
+        moduleToPosition.put(Module.NEWS_FEED, Position.MIDDLE_CENTER);
+        moduleToPosition.put(Module.CURRENT_WEATHER, Position.BOTTOM_LEFT);
+        moduleToPosition.put(Module.WEATHER_FORECAST, Position.BOTTOM_RIGHT);
+    }
+
+    static public String moduleToString(Module module) {
+        if (module == null) {
+            return "";
         }
-        return true;
+        switch (module) {
+            case CLOCK:
+                return "Clock";
+            case COMPLIMENTS:
+                return "Compliments";
+            case CURRENT_WEATHER:
+                return "Current Weather";
+            case NEWS_FEED:
+                return "News Feed";
+            case WEATHER_FORECAST:
+                return "Weather Forecast";
+        }
+        return "";
+    }
+
+    public void edit(String module, Position position) {
+        moduleToPosition.inverse().remove(position);
+        Module mod = moduleToString.inverse().get(module);
+        if (mod == null) {
+            return;
+        }
+        moduleToPosition.put(mod, position);
+    }
+
+    public String getModule(Position position) {
+        return moduleToString(moduleToPosition.inverse().get(position));
+    }
+
+    public enum Position {
+        TOP_LEFT,
+        TOP_CENTER,
+        TOP_RIGHT,
+        MIDDLE_CENTER,
+        BOTTOM_LEFT,
+        BOTTOM_CENTER,
+        BOTTOM_RIGHT,
     }
 
     public enum Module {
-        COMPLIMENTS,
         CLOCK,
+        COMPLIMENTS,
         CURRENT_WEATHER,
-        WEATHER_FORECAST,
-        NEWS_FEED
+        NEWS_FEED,
+        WEATHER_FORECAST
     }
 
+    @Override
+    public String toString() {
+        return moduleToPosition.toString();
+    }
 }
 

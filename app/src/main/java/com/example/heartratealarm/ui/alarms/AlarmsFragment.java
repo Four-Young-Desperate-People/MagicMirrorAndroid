@@ -123,7 +123,6 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
             count++;
         }
 
-
     }
 
     @Override
