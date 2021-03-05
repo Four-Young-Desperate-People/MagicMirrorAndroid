@@ -6,8 +6,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.heartratealarm.alarm.Alarm;
-
 import java.util.List;
 
 @Dao

@@ -15,13 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.heartratealarm.mirror_ui_settings.MagicMirrorUISettings;
-import com.example.heartratealarm.mirror_ui_settings.ModuleMapping;
 import com.example.heartratealarm.R;
-import com.example.heartratealarm.mirror_ui_settings.UIjson;
-import com.google.gson.Gson;
-
-import java.util.Map;
+import com.example.heartratealarm.mirror_ui_settings.MagicMirrorUISettings;
 
 public class SmartMirrorFragment extends Fragment implements View.OnClickListener {
 
@@ -73,10 +68,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
             return;
         }
         if (v.getId() == R.id.btnSaveMirror) {
-            ModuleMapping mm = settings.toModuleMapping();
-            Map<String, UIjson> map = mm.map;
-            Gson gson = new Gson();
-            String json = gson.toJson(map);
+            String json = settings.toJson();
             // TODO: YEET TO MIRROR
             Log.d(TAG, "Save Mirror: " + json);
             Toast.makeText(getContext(), "Saved!", Toast.LENGTH_SHORT).show();
