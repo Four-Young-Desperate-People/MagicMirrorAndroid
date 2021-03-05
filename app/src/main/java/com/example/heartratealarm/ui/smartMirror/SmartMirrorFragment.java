@@ -11,15 +11,14 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.heartratealarm.MagicMirrorUISettings;
-import com.example.heartratealarm.ModuleMapping;
+import com.example.heartratealarm.mirror_ui_settings.MagicMirrorUISettings;
+import com.example.heartratealarm.mirror_ui_settings.ModuleMapping;
 import com.example.heartratealarm.R;
-import com.example.heartratealarm.UIjson;
+import com.example.heartratealarm.mirror_ui_settings.UIjson;
 import com.google.gson.Gson;
 
 import java.util.Map;

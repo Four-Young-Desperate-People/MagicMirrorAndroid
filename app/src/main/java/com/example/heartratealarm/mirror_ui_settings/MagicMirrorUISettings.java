@@ -1,12 +1,9 @@
-package com.example.heartratealarm;
+package com.example.heartratealarm.mirror_ui_settings;
 
-
-import android.provider.Contacts;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumBiMap;
 import com.google.common.collect.EnumHashBiMap;
-import com.google.common.collect.HashBiMap;
 
 // TODO: Hi Dom: needs GSON
 public class MagicMirrorUISettings {

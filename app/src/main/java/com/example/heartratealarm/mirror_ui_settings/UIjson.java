@@ -1,4 +1,4 @@
-package com.example.heartratealarm;
+package com.example.heartratealarm.mirror_ui_settings;
 
 
 import com.google.gson.annotations.SerializedName;

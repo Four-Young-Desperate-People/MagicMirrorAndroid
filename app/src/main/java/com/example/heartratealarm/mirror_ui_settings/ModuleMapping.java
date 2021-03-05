@@ -1,6 +1,4 @@
-package com.example.heartratealarm;
-
-import com.google.gson.annotations.SerializedName;
+package com.example.heartratealarm.mirror_ui_settings;
 
 import java.util.HashMap;
 import java.util.Map;

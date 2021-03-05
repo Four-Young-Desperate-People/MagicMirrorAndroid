@@ -1,4 +1,4 @@
-package com.example.heartratealarm;
+package com.example.heartratealarm.alarm;
 
 import android.content.Context;
 

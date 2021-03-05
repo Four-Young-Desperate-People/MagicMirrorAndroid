@@ -1,4 +1,4 @@
-package com.example.heartratealarm;
+package com.example.heartratealarm.alarm;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -16,6 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.heartratealarm.AlarmReceiver;
+import com.example.heartratealarm.MainActivity;
+import com.example.heartratealarm.R;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -19,8 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.heartratealarm.Alarm;
-import com.example.heartratealarm.AlarmDatabase;
+import com.example.heartratealarm.alarm.Alarm;
+import com.example.heartratealarm.alarm.AlarmDatabase;
 import com.example.heartratealarm.EditAlarmActivity;
 import com.example.heartratealarm.R;
 import com.google.android.material.card.MaterialCardView;
