@@ -7,10 +7,8 @@ import com.google.common.collect.EnumHashBiMap;
 import com.google.gson.Gson;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
-// TODO: Hi Dom: needs GSON
 public class MagicMirrorUISettings {
     private static final BiMap<Module, String> moduleToString = EnumHashBiMap.create(Module.class);
 
@@ -20,16 +18,6 @@ public class MagicMirrorUISettings {
         moduleToString.put(Module.NEWS_FEED, "News Feed");
         moduleToString.put(Module.CURRENT_WEATHER, "Current Weather");
         moduleToString.put(Module.WEATHER_FORECAST, "Weather Forecast");
-    }
-
-    private static final BiMap<Module, String> moduleToGSONString = EnumHashBiMap.create(Module.class);
-
-    static {
-        moduleToGSONString.put(Module.COMPLIMENTS, "compliments");
-        moduleToGSONString.put(Module.CLOCK, "clock");
-        moduleToGSONString.put(Module.NEWS_FEED, "newsfeed");
-        moduleToGSONString.put(Module.CURRENT_WEATHER, "currentweather");
-        moduleToGSONString.put(Module.WEATHER_FORECAST, "weatherforecast");
     }
 
     public BiMap<Module, Position> moduleToPosition = EnumBiMap.create(Module.class, Position.class);
@@ -74,6 +62,48 @@ public class MagicMirrorUISettings {
         return moduleToString(moduleToPosition.inverse().get(position));
     }
 
+    @Override
+    public String toString() {
+        return moduleToPosition.toString();
+    }
+
+    public String toJson() {
+        JsonUI jsonUI = new JsonUI();
+        Queue<Position> unusedPositions = new LinkedList<>();
+        for (Position position : Position.values()) {
+            if (moduleToPosition.inverse().get(position) == null) {
+                unusedPositions.add(position);
+            }
+        }
+        for (Module module : Module.values()) {
+            Position position = moduleToPosition.get(module);
+            jsonUI.addModule(module, position, unusedPositions);
+        }
+        Gson gson = new Gson();
+        return gson.toJson(jsonUI);
+    }
+
+    public void fromJson(String json) {
+        Gson gson = new Gson();
+        JsonUI jsonUI = gson.fromJson(json, JsonUI.class);
+        moduleToPosition.clear();
+        if (jsonUI.clock.visible.equals("true")) {
+            moduleToPosition.put(Module.CLOCK, Position.valueOf(jsonUI.clock.position.toUpperCase()));
+        }
+        if (jsonUI.compliments.visible.equals("true")) {
+            moduleToPosition.put(Module.COMPLIMENTS, Position.valueOf(jsonUI.compliments.position.toUpperCase()));
+        }
+        if (jsonUI.currentWeather.visible.equals("true")) {
+            moduleToPosition.put(Module.CURRENT_WEATHER, Position.valueOf(jsonUI.currentWeather.position.toUpperCase()));
+        }
+        if (jsonUI.newsFeed.visible.equals("true")) {
+            moduleToPosition.put(Module.NEWS_FEED, Position.valueOf(jsonUI.newsFeed.position.toUpperCase()));
+        }
+        if (jsonUI.weatherForecast.visible.equals("true")) {
+            moduleToPosition.put(Module.WEATHER_FORECAST, Position.valueOf(jsonUI.weatherForecast.position.toUpperCase()));
+        }
+    }
+
     public enum Position {
         TOP_LEFT,
         TOP_CENTER,
@@ -92,38 +122,6 @@ public class MagicMirrorUISettings {
         WEATHER_FORECAST
     }
 
-    @Override
-    public String toString() {
-        return moduleToPosition.toString();
-    }
 
-    public ModuleMapping toModuleMapping() {
-        ModuleMapping moduleMapping = new ModuleMapping();
-        Queue<Position> unusedPositions = new LinkedList<>();
-        for (Position position : Position.values()) {
-            if (moduleToPosition.inverse().get(position) == null) {
-                unusedPositions.add(position);
-            }
-        }
-        for (Module module : Module.values()) {
-            UIjson uiJson = new UIjson();
-            Position position = moduleToPosition.get(module);
-            if (position == null) {
-                uiJson.visible = "false";
-                uiJson.position = unusedPositions.poll().toString().toLowerCase();
-            } else {
-                uiJson.visible = "true";
-                uiJson.position = moduleToPosition.get(module).toString().toLowerCase();
-            }
-            moduleMapping.map.put(moduleToGSONString.get(module), uiJson);
-        }
-        return moduleMapping;
-    }
-
-    public String toJson() {
-        Gson gson = new Gson();
-        Map<String, UIjson> map = this.toModuleMapping().map;
-        return gson.toJson(map);
-    }
 }
 

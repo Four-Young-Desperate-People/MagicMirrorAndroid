@@ -22,7 +22,6 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
 
     private static final String TAG = "SmartMirrorSettings";
     MagicMirrorUISettings settings = new MagicMirrorUISettings();
-    // TODO: temp code, we need to read this in
     private SmartMirrorViewModel smartMirrorViewModel = new SmartMirrorViewModel();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -64,7 +63,10 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnMirrorSync) {
-            // TODO: Read in GSON
+            // TODO: for testing, please remove
+            String json = "{\"clock\":{\"position\":\"top_left\",\"visible\":\"false\"},\"compliments\":{\"position\":\"middle_center\",\"visible\":\"true\"},\"currentweather\":{\"position\":\"top_center\",\"visible\":\"false\"},\"newsfeed\":{\"position\":\"top_right\",\"visible\":\"false\"},\"weatherforecast\":{\"position\":\"bottom_left\",\"visible\":\"true\"}}";
+            settings.fromJson(json);
+            populate(v.getRootView());
             return;
         }
         if (v.getId() == R.id.btnSaveMirror) {
