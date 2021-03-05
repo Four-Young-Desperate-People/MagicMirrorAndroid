@@ -38,6 +38,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         root.findViewById(R.id.cardBottomRight).setOnClickListener(this);
         root.findViewById(R.id.btnSaveMirror).setOnClickListener(this);
         root.findViewById(R.id.btnMirrorSync).setOnClickListener(this);
+       
         populate(root);
         return root;
     }
@@ -45,18 +46,25 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     void populate(View view) {
         TextView topLeft = view.findViewById(R.id.textTopLeft);
         topLeft.setText(settings.getModule(MagicMirrorUISettings.Position.TOP_LEFT));
+
         TextView topCenter = view.findViewById(R.id.textTopCenter);
         topCenter.setText(settings.getModule(MagicMirrorUISettings.Position.TOP_CENTER));
+
         TextView topRight = view.findViewById(R.id.textTopRight);
         topRight.setText(settings.getModule(MagicMirrorUISettings.Position.TOP_RIGHT));
+
         TextView middleCenter = view.findViewById(R.id.textMiddleCenter);
         middleCenter.setText(settings.getModule(MagicMirrorUISettings.Position.MIDDLE_CENTER));
+
         TextView bottomLeft = view.findViewById(R.id.textBottomLeft);
         bottomLeft.setText(settings.getModule(MagicMirrorUISettings.Position.BOTTOM_LEFT));
+
         TextView bottomCenter = view.findViewById(R.id.textBottomCenter);
         bottomCenter.setText(settings.getModule(MagicMirrorUISettings.Position.BOTTOM_CENTER));
+
         TextView bottomRight = view.findViewById(R.id.textBottomRight);
         bottomRight.setText(settings.getModule(MagicMirrorUISettings.Position.BOTTOM_RIGHT));
+
         Log.d(TAG, "populate: DONE");
     }
 
