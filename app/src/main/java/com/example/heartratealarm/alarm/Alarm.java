@@ -36,8 +36,10 @@ public class Alarm {
     @PrimaryKey
     @NonNull
     public int id;
-    @ColumnInfo(name = "next_run")
-    public long nextRun;
+    @ColumnInfo(name = "hour_of_day")
+    public int hourOfDay;
+    @ColumnInfo(name = "minute")
+    public int minute;
     @ColumnInfo(name = "vibrate")
     public boolean vibrate = false;
     @ColumnInfo(name = "song_path")
@@ -108,7 +110,20 @@ public class Alarm {
         intent.putExtra("ID", id);
         // TODO: Request Codes must all be unique
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, id, intent, 0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextRun, pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getUnixTime(), pendingIntent);
+    }
+
+    public long getUnixTime(){
+        Calendar calendar = Calendar.getInstance();
+        long currTime = Calendar.getInstance().getTimeInMillis();
+        calendar.setTimeInMillis(currTime);
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        if (currTime >= calendar.getTimeInMillis()){
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        return calendar.getTimeInMillis();
     }
 
     // Saves the alarm to sql
@@ -140,27 +155,19 @@ public class Alarm {
     }
 
     public void setNextRun(Calendar nextRun) {
-        this.nextRun = nextRun.getTimeInMillis();
+        hourOfDay = nextRun.get(Calendar.HOUR_OF_DAY);
+        minute = nextRun.get(Calendar.MINUTE);
     }
 
-    public static Calendar findNextRun(int hourOfDay, int minute) {
-        Date currTime = Calendar.getInstance().getTime();
-        Calendar nextTime = Calendar.getInstance();
-        nextTime.setTime(currTime);
-        nextTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        nextTime.set(Calendar.MINUTE, minute);
-        nextTime.set(Calendar.SECOND, 0);
-        nextTime.set(Calendar.MILLISECOND, 0);
-        if (nextTime.getTimeInMillis() < currTime.getTime()) {
-            nextTime.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        Log.d(TAG, "findNextRun: " + nextTime.getTime().toString());
-        return nextTime;
+    public void setNextRun(int hourOfDay, int minute){
+        this.hourOfDay = hourOfDay;
+        this.minute = hourOfDay;
     }
+
 
     public String timeToRun() {
         long currTime = Calendar.getInstance().getTimeInMillis();
-        long diff = nextRun - currTime;
+        long diff = getUnixTime() - currTime;
         long hours = TimeUnit.MILLISECONDS.toHours(diff);
         long mins = TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(hours);
         if (hours == 0 && mins == 0) {
@@ -172,8 +179,8 @@ public class Alarm {
     @Override
     public String toString() {
         return "Alarm{" +
-                "id='" + id + '\'' +
-                ", nextRun=" + nextRun +
+                "id=" + id +
+                ", runTime=" + hourOfDay + ":" + minute +
                 ", vibrate=" + vibrate +
                 ", songPath='" + songPath + '\'' +
                 ", alarmVolume=" + alarmVolume +

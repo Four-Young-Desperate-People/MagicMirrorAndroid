@@ -104,7 +104,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
             cardLayout.addView(enabled);
 
             TextView time = new TextView(requireContext());
-            time.setText(DateUtils.formatDateTime(requireContext(), alarm.nextRun, DateUtils.FORMAT_SHOW_TIME));
+            time.setText(DateUtils.formatDateTime(requireContext(), alarm.getUnixTime(), DateUtils.FORMAT_SHOW_TIME));
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
             time.setPadding((int) (8 * scale), 0, 0, 0);
             cardLayout.addView(time);

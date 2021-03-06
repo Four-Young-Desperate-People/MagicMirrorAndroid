@@ -179,12 +179,10 @@ public class EditAlarmActivity extends AppCompatActivity {
         vibrateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.vibrate = isChecked);
 
         TimePicker timePicker = this.findViewById(R.id.timePicker);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(alarm.nextRun);
-        timePicker.setHour(calendar.get(Calendar.HOUR_OF_DAY));
-        timePicker.setMinute(calendar.get(Calendar.MINUTE));
+        timePicker.setHour(alarm.hourOfDay);
+        timePicker.setMinute(alarm.minute);
         timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
-            alarm.setNextRun(Alarm.findNextRun(hourOfDay, minute));
+            alarm.setNextRun(hourOfDay, minute);
             timeCountdown.setText("Ring in: " + alarm.timeToRun());
         });
 
