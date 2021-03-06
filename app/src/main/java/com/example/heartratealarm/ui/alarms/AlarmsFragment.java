@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import com.example.heartratealarm.R;
 import com.example.heartratealarm.alarm.Alarm;
 import com.example.heartratealarm.alarm.AlarmDatabase;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
 import java.util.List;
@@ -95,14 +97,18 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
             cardLayout.setOrientation(LinearLayout.HORIZONTAL);
             cardLayout.setPadding((int) (8 * scale), (int) (16 * scale), 0, (int) (16 * scale));
             cardLayout.setGravity(Gravity.CENTER_VERTICAL);
-            CheckBox enabled = new CheckBox(requireContext());
+
+            SwitchMaterial enabled = new SwitchMaterial(requireContext());
             enabled.setActivated(alarm.enabled);
+            enabled.setGravity(Gravity.CENTER_VERTICAL);
+            cardLayout.addView(enabled);
+
             TextView time = new TextView(requireContext());
             time.setText(DateUtils.formatDateTime(requireContext(), alarm.nextRun, DateUtils.FORMAT_SHOW_TIME));
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
             time.setPadding((int) (8 * scale), 0, 0, 0);
-            cardLayout.addView(enabled);
             cardLayout.addView(time);
+
             alarmCard.addView(cardLayout);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
