@@ -51,6 +51,8 @@ public class Alarm {
     public int exerciseVolume = 50;
     @ColumnInfo(name = "brightness")
     public int brightness = 50;
+    @ColumnInfo(name = "exercise")
+    public int exercise = 0;
     @ColumnInfo(name = "enabled")
     public boolean enabled;
 
@@ -160,7 +162,7 @@ public class Alarm {
 
     public void setNextRun(int hourOfDay, int minute) {
         this.hourOfDay = hourOfDay;
-        this.minute = hourOfDay;
+        this.minute = minute;
     }
 
 

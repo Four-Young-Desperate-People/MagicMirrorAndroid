@@ -8,7 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -21,8 +25,12 @@ import androidx.core.content.ContextCompat;
 
 import com.example.heartratealarm.alarm.Alarm;
 import com.example.heartratealarm.alarm.AlarmDatabase;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.Arrays;
+import java.util.List;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -51,22 +59,22 @@ public class EditAlarmActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, perms, REQ_STORAGE_PERMS);
         }
 
-        Single<Alarm> whateverTheFuck;
+        Single<Alarm> single;
         int alarmID;
         Bundle alarmInfo = getIntent().getExtras();
         if (alarmInfo != null) {
             Log.d(TAG, "Editing Alarm");
             alarmID = alarmInfo.getInt("id");
-            whateverTheFuck = Alarm.loadAlarm(alarmID, getApplicationContext());
+            single = Alarm.loadAlarm(alarmID, getApplicationContext());
             updateFlag = true;
         } else {
-            whateverTheFuck = Single.just(new Alarm());
+            single = Single.just(new Alarm());
             updateFlag = false;
         }
 
-        readerDisposable = whateverTheFuck.observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+        readerDisposable = single.observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
             alarm = a;
-            magicFunction();
+            loadUI();
         }, e -> {
             Log.e(TAG, "onCreate: ", e);
         });
@@ -134,11 +142,12 @@ public class EditAlarmActivity extends AppCompatActivity {
         }
     }
 
-    void magicFunction() {
+    void loadUI() {
         TextView timeCountdown = this.findViewById(R.id.timeToRun);
         timeCountdown.setText("Ring in: " + alarm.timeToRun());
 
         Button btnAlarmSong = this.findViewById(R.id.alarmMusicButton);
+        //TODO: SET SONG
         btnAlarmSong.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -146,6 +155,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         });
 
         Button btnExerciseSong = this.findViewById(R.id.exerciseMusicButton);
+        //TODO: SET SONG
         btnExerciseSong.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -170,10 +180,16 @@ public class EditAlarmActivity extends AppCompatActivity {
             }
         });
 
-        Slider sliderAlarmVolume = this.findViewById(R.id.volumeSlider);
+        Slider sliderAlarmVolume = this.findViewById(R.id.alarmVolumeSlider);
+        sliderAlarmVolume.setValue(alarm.alarmVolume);
         sliderAlarmVolume.addOnChangeListener((slider, value, fromUser) -> alarm.alarmVolume = (int) value);
 
+        Slider sliderExerciseVolume = this.findViewById(R.id.exerciseVolumeSlider);
+        sliderExerciseVolume.setValue(alarm.exerciseVolume);
+        sliderExerciseVolume.addOnChangeListener((slider, value, fromUser) -> alarm.exerciseVolume = (int) value);
+
         SwitchMaterial vibrateSwitch = this.findViewById(R.id.vibrateSwitch);
+        vibrateSwitch.setChecked(alarm.vibrate);
         vibrateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.vibrate = isChecked);
 
         TimePicker timePicker = this.findViewById(R.id.timePicker);
@@ -184,7 +200,34 @@ public class EditAlarmActivity extends AppCompatActivity {
             timeCountdown.setText("Ring in: " + alarm.timeToRun());
         });
 
-        Slider sliderBrightness = this.findViewById(R.id.volumeSlider);
-        sliderBrightness.addOnChangeListener((slider, value, fromUser) -> alarm.brightness = (int) value);
+        List<String> exercises = Arrays.asList("Squats", "Jumping Jacks");
+        MaterialCardView exerciseCard = this.findViewById(R.id.exerciseCardView);
+        TextView exerciseText = this.findViewById(R.id.exerciseText);
+        exerciseText.setText(exercises.get(alarm.exercise));
+        PopupMenu popup = new PopupMenu(getApplicationContext(), exerciseCard);
+        Menu menu = popup.getMenu();
+        menu.add("Squats");
+        menu.add("Jumping Jacks");
+        exerciseCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popup.show();
+            }
+        });
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, "onMenuItemClick: " + exercises.indexOf(item.getTitle().toString()));
+                alarm.exercise = exercises.indexOf(item.getTitle().toString());
+                exerciseText.setText(item.getTitle());
+                return false;
+            }
+        });
+
+
+    }
+
+    private String getSongName(String path) {
+        return "SONG NAME HERE";
     }
 }

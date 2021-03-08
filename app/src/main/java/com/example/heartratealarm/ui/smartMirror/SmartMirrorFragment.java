@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -85,7 +84,6 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
             return;
         }
         PopupMenu popup = new PopupMenu(getContext(), v);
-        MenuInflater inflater = popup.getMenuInflater();
         Menu menu = popup.getMenu();
         for (MagicMirrorUISettings.Module module : MagicMirrorUISettings.Module.values()) {
             menu.add(MagicMirrorUISettings.moduleToString(module));

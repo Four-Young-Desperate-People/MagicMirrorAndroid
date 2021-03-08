@@ -64,6 +64,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/brightnessSlider" />
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exercise"
+            app:layout_constraintBottom_toBottomOf="@+id/exerciseCardView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/exerciseCardView" />
+
         <com.google.android.material.slider.Slider
             android:id="@+id/brightnessSlider"
             android:layout_width="0dp"
@@ -75,7 +84,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/alarmVolumeSlider" />
+            app:layout_constraintTop_toBottomOf="@+id/exerciseVolumeSlider" />
 
         <TextView
             android:id="@+id/textView6"
@@ -83,12 +92,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:text="Exercise Volume"
-            app:layout_constraintBottom_toBottomOf="@+id/alarmVolumeSlider"
+            app:layout_constraintBottom_toBottomOf="@+id/exerciseVolumeSlider"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/alarmVolumeSlider" />
+            app:layout_constraintTop_toTopOf="@+id/exerciseVolumeSlider" />
 
         <com.google.android.material.slider.Slider
-            android:id="@+id/alarmVolumeSlider"
+            android:id="@+id/exerciseVolumeSlider"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:value="50"
@@ -127,10 +136,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/volumeSlider" />
+            app:layout_constraintTop_toBottomOf="@+id/alarmVolumeSlider" />
 
         <com.google.android.material.slider.Slider
-            android:id="@+id/volumeSlider"
+            android:id="@+id/alarmVolumeSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:value="50"
@@ -147,9 +156,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Alarm Volume"
-            app:layout_constraintBottom_toBottomOf="@+id/volumeSlider"
+            app:layout_constraintBottom_toBottomOf="@+id/alarmVolumeSlider"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/volumeSlider" />
+            app:layout_constraintTop_toTopOf="@+id/alarmVolumeSlider" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
@@ -157,6 +166,26 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.33" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/exerciseCardView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessSlider">
+
+            <TextView
+                android:id="@+id/exerciseText"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
