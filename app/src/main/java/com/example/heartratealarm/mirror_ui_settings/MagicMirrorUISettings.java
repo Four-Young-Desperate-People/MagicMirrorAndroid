@@ -1,6 +1,7 @@
 package com.example.heartratealarm.mirror_ui_settings;
 
 
+import com.example.heartratealarm.websocket.GenericData;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumBiMap;
 import com.google.common.collect.EnumHashBiMap;
@@ -79,8 +80,9 @@ public class MagicMirrorUISettings {
             Position position = moduleToPosition.get(module);
             jsonUI.moduleNames.addModule(module, position, unusedPositions);
         }
+        GenericData gd = new GenericData("update_modules", jsonUI);
         Gson gson = new Gson();
-        return gson.toJson(jsonUI);
+        return gson.toJson(gd);
     }
 
     public void fromJson(String json) {

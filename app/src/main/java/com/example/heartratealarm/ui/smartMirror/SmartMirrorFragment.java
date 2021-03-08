@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -17,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.R;
 import com.example.heartratealarm.mirror_ui_settings.MagicMirrorUISettings;
+import com.example.heartratealarm.websocket.WebSocketBase;
 
 public class SmartMirrorFragment extends Fragment implements View.OnClickListener {
 
@@ -79,11 +79,11 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         }
         if (v.getId() == R.id.btnSaveMirror) {
             String json = settings.toJson();
-            // TODO: YEET TO MIRROR
-            Log.d(TAG, "Save Mirror: " + json);
-            Toast.makeText(getContext(), "Saved!", Toast.LENGTH_SHORT).show();
-            return;
+            WebSocketBase ws = new WebSocketBase();
+            ws.send(json);
+            ws.close();
         }
+
         PopupMenu popup = new PopupMenu(getContext(), v);
         MenuInflater inflater = popup.getMenuInflater();
         Menu menu = popup.getMenu();
