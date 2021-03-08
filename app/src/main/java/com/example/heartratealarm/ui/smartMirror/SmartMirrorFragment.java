@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,6 +15,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.heartratealarm.R;
 import com.example.heartratealarm.mirror_ui_settings.MagicMirrorUISettings;
+import com.example.heartratealarm.websocket.GenericData;
+import com.example.heartratealarm.websocket.WebSocketBase;
+import com.google.gson.Gson;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class SmartMirrorFragment extends Fragment implements View.OnClickListener {
 
@@ -70,19 +75,44 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnMirrorSync) {
-            // TODO: for testing, please remove
-            String json = "{\"method\":\"update_modules_display\",\"data\":{\"clock\":{\"position\":\"top_right\",\"visible\":\"true\"},\"compliments\":{\"position\":\"top_left\",\"visible\":\"true\"},\"currentweather\":{\"position\":\"top_center\",\"visible\":\"false\"},\"newsfeed\":{\"position\":\"middle_center\",\"visible\":\"true\"},\"weatherforecast\":{\"position\":\"bottom_left\",\"visible\":\"false\"}}}";
-            settings.fromJson(json);
-            populate(v.getRootView());
+            // Uncommnent incase you want to test locally;
+            //String json = "{\"method\":\"update_modules_display\",\"data\":{\"clock\":{\"position\":\"top_right\",\"visible\":\"true\"},\"compliments\":{\"position\":\"top_left\",\"visible\":\"true\"},\"currentweather\":{\"position\":\"top_center\",\"visible\":\"false\"},\"newsfeed\":{\"position\":\"middle_center\",\"visible\":\"true\"},\"weatherforecast\":{\"position\":\"bottom_left\",\"visible\":\"false\"}}}";
+            // settings.fromJson(json);
+            // populate(v.getRootView());
+
+            WebSocketBase ws = new WebSocketBase();
+            Gson gson = new Gson();
+            GenericData<Boolean> gd = new GenericData("get_modules_display", false);
+            String json = gson.toJson(gd);
+            // Its smarter to keep this around and properly dispose of it, but I'm tied. Yolo.
+            Disposable d = ws.getMessageObservable().map(s -> {
+                Log.i(TAG, "We got data from the Pi");
+                settings.fromJson(s);
+                return true;
+            }).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(a -> {
+                        populate(v.getRootView());
+                        ws.close();
+                    }, e -> {
+                        Log.e(TAG, "Got an error trying to read data from Pi", e);
+                        ws.close();
+                    });
+
+            // Need to set up the listener before we send, otherwise we have a race condition and
+            // require to have 2 clicks.
+            ws.send(json);
             return;
         }
+
+
         if (v.getId() == R.id.btnSaveMirror) {
             String json = settings.toJson();
-            // TODO: YEET TO MIRROR
-            Log.d(TAG, "Save Mirror: " + json);
-            Toast.makeText(getContext(), "Saved!", Toast.LENGTH_SHORT).show();
+            WebSocketBase ws = new WebSocketBase();
+            ws.send(json);
+            ws.close();
             return;
         }
+
         PopupMenu popup = new PopupMenu(getContext(), v);
         Menu menu = popup.getMenu();
         for (MagicMirrorUISettings.Module module : MagicMirrorUISettings.Module.values()) {

@@ -49,4 +49,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     annotationProcessor 'androidx.room:room-compiler:2.2.6'
+
+    // websockets
+    implementation 'tech.gusavila92:java-android-websocket-client:1.2.2'
+    implementation 'com.koushikdutta.async:androidasync:2.+'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.squareup.okhttp3:okhttp:3.6.0'
 }

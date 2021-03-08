@@ -74,6 +74,7 @@ public class Alarm {
 
     // Main logic that is called when the alarm is running, since called from an intent, static
     static public void runAlarm(Context context, Intent intent) {
+        // TODO DOM PUT WEBSOCKET HERE FOR FULL PATH
         // TODO: get rid of this debug text
         Toast.makeText(context, "ALARM", Toast.LENGTH_SHORT).show();
 

@@ -1,0 +1,106 @@
+package com.example.heartratealarm.websocket;
+
+import android.util.Log;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
+
+public class WebSocketBase extends WebSocketListener {
+    private static final String TAG = "WebSocketBase2";
+    private static final String ENDPOINT = "ws://192.168.1.92:3683/android";
+    private final Object messageLock;
+    private String message;
+    private final Object stopLock;
+    private boolean stop;
+
+    private final WebSocket webSocket;
+
+    public WebSocketBase() {
+        Request request = new Request.Builder().url(ENDPOINT)
+                .build();
+        OkHttpClient client = new OkHttpClient();
+        webSocket = client.newWebSocket(request, this);
+        messageLock = new Object();
+        stopLock = new Object();
+        stop = false;
+    }
+
+    @Override
+    public void onOpen(WebSocket webSocket, Response response) {
+        Log.i(TAG, String.format("successfully connected to %s", ENDPOINT));
+    }
+
+    public void send(String string) {
+        webSocket.send(string);
+    }
+
+    public void close() {
+        webSocket.close(1000, null);
+    }
+
+    private String getMessage() throws InterruptedException {
+        synchronized (messageLock) {
+            messageLock.wait();
+            synchronized (stopLock) {
+                if (stop) {
+                    return null;
+                }
+            }
+            return message;
+        }
+    }
+
+    public Observable<String> getMessageObservable() {
+        return Observable.fromCallable(this::getMessage).retryUntil(() -> {
+            synchronized (stopLock) {
+                return stop;
+            }
+        }).subscribeOn(Schedulers.newThread());
+    }
+
+    @Override
+    public void onMessage(WebSocket webSocket, String text) {
+        synchronized (messageLock) {
+            message = text;
+            messageLock.notifyAll();
+        }
+    }
+
+    @Override
+    public void onMessage(WebSocket webSocket, ByteString bytes) {
+        Log.e(TAG, "we should not be receiving binary data...");
+    }
+
+    @Override
+    public void onClosing(WebSocket webSocket, int code, String reason) {
+        Log.i(TAG, "closing websocket");
+        synchronized (stopLock) {
+            stop = true;
+        }
+        synchronized (messageLock) {
+            messageLock.notify();
+        }
+    }
+
+    @Override
+    public void onClosed(WebSocket webSocket, int code, String reason) {
+        Log.i(TAG, "websocket is now closed");
+    }
+
+    @Override
+    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+        Log.e(TAG, "had a websocket oopsie", t);
+        synchronized (stopLock) {
+            stop = true;
+        }
+        synchronized (messageLock) {
+            messageLock.notify();
+        }
+    }
+}
