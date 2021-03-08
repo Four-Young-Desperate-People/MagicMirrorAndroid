@@ -22,7 +22,6 @@ import com.example.heartratealarm.MainActivity;
 import com.example.heartratealarm.R;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -113,13 +112,13 @@ public class Alarm {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, getUnixTime(), pendingIntent);
     }
 
-    public long getUnixTime(){
+    public long getUnixTime() {
         Calendar calendar = Calendar.getInstance();
         long currTime = Calendar.getInstance().getTimeInMillis();
         calendar.setTimeInMillis(currTime);
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
-        if (currTime >= calendar.getTimeInMillis()){
+        if (currTime >= calendar.getTimeInMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
 
@@ -159,7 +158,7 @@ public class Alarm {
         minute = nextRun.get(Calendar.MINUTE);
     }
 
-    public void setNextRun(int hourOfDay, int minute){
+    public void setNextRun(int hourOfDay, int minute) {
         this.hourOfDay = hourOfDay;
         this.minute = hourOfDay;
     }

@@ -77,7 +77,7 @@ public class MagicMirrorUISettings {
         }
         for (Module module : Module.values()) {
             Position position = moduleToPosition.get(module);
-            jsonUI.addModule(module, position, unusedPositions);
+            jsonUI.moduleNames.addModule(module, position, unusedPositions);
         }
         Gson gson = new Gson();
         return gson.toJson(jsonUI);
@@ -87,20 +87,20 @@ public class MagicMirrorUISettings {
         Gson gson = new Gson();
         JsonUI jsonUI = gson.fromJson(json, JsonUI.class);
         moduleToPosition.clear();
-        if (jsonUI.clock.visible.equals("true")) {
-            moduleToPosition.put(Module.CLOCK, Position.valueOf(jsonUI.clock.position.toUpperCase()));
+        if (jsonUI.moduleNames.clock.visible.equals("true")) {
+            moduleToPosition.put(Module.CLOCK, Position.valueOf(jsonUI.moduleNames.clock.position.toUpperCase()));
         }
-        if (jsonUI.compliments.visible.equals("true")) {
-            moduleToPosition.put(Module.COMPLIMENTS, Position.valueOf(jsonUI.compliments.position.toUpperCase()));
+        if (jsonUI.moduleNames.compliments.visible.equals("true")) {
+            moduleToPosition.put(Module.COMPLIMENTS, Position.valueOf(jsonUI.moduleNames.compliments.position.toUpperCase()));
         }
-        if (jsonUI.currentWeather.visible.equals("true")) {
-            moduleToPosition.put(Module.CURRENT_WEATHER, Position.valueOf(jsonUI.currentWeather.position.toUpperCase()));
+        if (jsonUI.moduleNames.currentWeather.visible.equals("true")) {
+            moduleToPosition.put(Module.CURRENT_WEATHER, Position.valueOf(jsonUI.moduleNames.currentWeather.position.toUpperCase()));
         }
-        if (jsonUI.newsFeed.visible.equals("true")) {
-            moduleToPosition.put(Module.NEWS_FEED, Position.valueOf(jsonUI.newsFeed.position.toUpperCase()));
+        if (jsonUI.moduleNames.newsFeed.visible.equals("true")) {
+            moduleToPosition.put(Module.NEWS_FEED, Position.valueOf(jsonUI.moduleNames.newsFeed.position.toUpperCase()));
         }
-        if (jsonUI.weatherForecast.visible.equals("true")) {
-            moduleToPosition.put(Module.WEATHER_FORECAST, Position.valueOf(jsonUI.weatherForecast.position.toUpperCase()));
+        if (jsonUI.moduleNames.weatherForecast.visible.equals("true")) {
+            moduleToPosition.put(Module.WEATHER_FORECAST, Position.valueOf(jsonUI.moduleNames.weatherForecast.position.toUpperCase()));
         }
     }
 

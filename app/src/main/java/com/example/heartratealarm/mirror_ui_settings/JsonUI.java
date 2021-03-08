@@ -5,6 +5,14 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Queue;
 
 public class JsonUI {
+    @SerializedName("method")
+    String method = "update_modules_display";
+
+    @SerializedName("data")
+    ModuleNames moduleNames = new ModuleNames();
+}
+
+class ModuleNames {
     @SerializedName("clock")
     ModuleValues clock;
 

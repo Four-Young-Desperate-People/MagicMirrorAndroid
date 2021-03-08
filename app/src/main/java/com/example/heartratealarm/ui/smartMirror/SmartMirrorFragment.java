@@ -38,7 +38,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         root.findViewById(R.id.cardBottomRight).setOnClickListener(this);
         root.findViewById(R.id.btnSaveMirror).setOnClickListener(this);
         root.findViewById(R.id.btnMirrorSync).setOnClickListener(this);
-       
+
         populate(root);
         return root;
     }
@@ -72,7 +72,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         if (v.getId() == R.id.btnMirrorSync) {
             // TODO: for testing, please remove
-            String json = "{\"clock\":{\"position\":\"top_left\",\"visible\":\"false\"},\"compliments\":{\"position\":\"middle_center\",\"visible\":\"true\"},\"currentweather\":{\"position\":\"top_center\",\"visible\":\"false\"},\"newsfeed\":{\"position\":\"top_right\",\"visible\":\"false\"},\"weatherforecast\":{\"position\":\"bottom_left\",\"visible\":\"true\"}}";
+            String json = "{\"method\":\"update_modules_display\",\"data\":{\"clock\":{\"position\":\"top_right\",\"visible\":\"true\"},\"compliments\":{\"position\":\"top_left\",\"visible\":\"true\"},\"currentweather\":{\"position\":\"top_center\",\"visible\":\"false\"},\"newsfeed\":{\"position\":\"middle_center\",\"visible\":\"true\"},\"weatherforecast\":{\"position\":\"bottom_left\",\"visible\":\"false\"}}}";
             settings.fromJson(json);
             populate(v.getRootView());
             return;

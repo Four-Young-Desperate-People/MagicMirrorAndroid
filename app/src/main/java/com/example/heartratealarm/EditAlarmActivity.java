@@ -24,8 +24,6 @@ import com.example.heartratealarm.alarm.AlarmDatabase;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import java.util.Calendar;
-
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
