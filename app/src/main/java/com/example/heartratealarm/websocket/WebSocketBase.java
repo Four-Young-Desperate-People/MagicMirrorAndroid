@@ -16,6 +16,8 @@ public class WebSocketBase extends WebSocketListener {
     private static final String ENDPOINT = "ws://192.168.1.92:3683/android";
     private final Object messageLock;
     private String message;
+    private final Object stopLock;
+    private boolean stop;
 
     private final WebSocket webSocket;
 
@@ -25,6 +27,8 @@ public class WebSocketBase extends WebSocketListener {
         OkHttpClient client = new OkHttpClient();
         webSocket = client.newWebSocket(request, this);
         messageLock = new Object();
+        stopLock = new Object();
+        stop = false;
     }
 
     @Override
@@ -40,15 +44,24 @@ public class WebSocketBase extends WebSocketListener {
         webSocket.close(1000, null);
     }
 
-    public String getMessage() throws InterruptedException {
+    private String getMessage() throws InterruptedException {
         synchronized (messageLock) {
             messageLock.wait();
+            synchronized (stopLock) {
+                if (stop) {
+                    return null;
+                }
+            }
             return message;
         }
     }
 
     public Observable<String> getMessageObservable() {
-        return Observable.fromCallable(this::getMessage).repeat().subscribeOn(Schedulers.newThread());
+        return Observable.fromCallable(this::getMessage).retryUntil(() -> {
+            synchronized (stopLock) {
+                return stop;
+            }
+        }).subscribeOn(Schedulers.newThread());
     }
 
     @Override
@@ -66,18 +79,28 @@ public class WebSocketBase extends WebSocketListener {
 
     @Override
     public void onClosing(WebSocket webSocket, int code, String reason) {
-        Log.e(TAG, "we should not be receiving binary data...");
-        messageLock.notify();
-        super.onClosing(webSocket, code, reason);
+        Log.i(TAG, "closing websocket");
+        synchronized (stopLock) {
+            stop = true;
+        }
+        synchronized (messageLock) {
+            messageLock.notify();
+        }
     }
 
     @Override
     public void onClosed(WebSocket webSocket, int code, String reason) {
-        Log.e(TAG, "Received CLOSE from server. This should not happen...");
+        Log.i(TAG, "websocket is now closed");
     }
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        Log.e(TAG, "Received CLOSE from server. This should not happen...");
+        Log.e(TAG, "had a websocket oopsie", t);
+        synchronized (stopLock) {
+            stop = true;
+        }
+        synchronized (messageLock) {
+            messageLock.notify();
+        }
     }
 }

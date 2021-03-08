@@ -6,7 +6,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumBiMap;
 import com.google.common.collect.EnumHashBiMap;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -78,7 +80,7 @@ public class MagicMirrorUISettings {
         }
         for (Module module : Module.values()) {
             Position position = moduleToPosition.get(module);
-            jsonUI.moduleNames.addModule(module, position, unusedPositions);
+            jsonUI.addModule(module, position, unusedPositions);
         }
         GenericData gd = new GenericData("update_modules", jsonUI);
         Gson gson = new Gson();
@@ -87,22 +89,25 @@ public class MagicMirrorUISettings {
 
     public void fromJson(String json) {
         Gson gson = new Gson();
-        JsonUI jsonUI = gson.fromJson(json, JsonUI.class);
+        Type type = new TypeToken<GenericData<JsonUI>>() {
+        }.getType();
+        GenericData<JsonUI> gd = gson.fromJson(json, type);
+        JsonUI jsonUI = gd.data;
         moduleToPosition.clear();
-        if (jsonUI.moduleNames.clock.visible.equals("true")) {
-            moduleToPosition.put(Module.CLOCK, Position.valueOf(jsonUI.moduleNames.clock.position.toUpperCase()));
+        if (jsonUI.clock.visible.equals("true")) {
+            moduleToPosition.put(Module.CLOCK, Position.valueOf(jsonUI.clock.position.toUpperCase()));
         }
-        if (jsonUI.moduleNames.compliments.visible.equals("true")) {
-            moduleToPosition.put(Module.COMPLIMENTS, Position.valueOf(jsonUI.moduleNames.compliments.position.toUpperCase()));
+        if (jsonUI.compliments.visible.equals("true")) {
+            moduleToPosition.put(Module.COMPLIMENTS, Position.valueOf(jsonUI.compliments.position.toUpperCase()));
         }
-        if (jsonUI.moduleNames.currentWeather.visible.equals("true")) {
-            moduleToPosition.put(Module.CURRENT_WEATHER, Position.valueOf(jsonUI.moduleNames.currentWeather.position.toUpperCase()));
+        if (jsonUI.currentWeather.visible.equals("true")) {
+            moduleToPosition.put(Module.CURRENT_WEATHER, Position.valueOf(jsonUI.currentWeather.position.toUpperCase()));
         }
-        if (jsonUI.moduleNames.newsFeed.visible.equals("true")) {
-            moduleToPosition.put(Module.NEWS_FEED, Position.valueOf(jsonUI.moduleNames.newsFeed.position.toUpperCase()));
+        if (jsonUI.newsFeed.visible.equals("true")) {
+            moduleToPosition.put(Module.NEWS_FEED, Position.valueOf(jsonUI.newsFeed.position.toUpperCase()));
         }
-        if (jsonUI.moduleNames.weatherForecast.visible.equals("true")) {
-            moduleToPosition.put(Module.WEATHER_FORECAST, Position.valueOf(jsonUI.moduleNames.weatherForecast.position.toUpperCase()));
+        if (jsonUI.weatherForecast.visible.equals("true")) {
+            moduleToPosition.put(Module.WEATHER_FORECAST, Position.valueOf(jsonUI.weatherForecast.position.toUpperCase()));
         }
     }
 
