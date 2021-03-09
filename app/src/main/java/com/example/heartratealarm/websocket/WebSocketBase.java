@@ -72,7 +72,7 @@ public class WebSocketBase extends WebSocketListener {
     }
 
     public void interval(Consumer<Long> f) {
-        pingDisposable = Observable.interval(5, TimeUnit.SECONDS)
+        pingDisposable = Observable.interval(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .subscribe(f,
                         e -> {
