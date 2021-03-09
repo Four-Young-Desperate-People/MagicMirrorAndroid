@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.alarms.AlarmsFragment">
 
-    <Button
-        android:id="@+id/testAlarmButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="QUICK ALARM"
-        app:layout_constraintBottom_toBottomOf="@+id/newAlarmButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/newAlarmButton" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/newAlarmButton"
         android:layout_width="wrap_content"

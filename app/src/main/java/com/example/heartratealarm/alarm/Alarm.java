@@ -5,6 +5,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,33 +28,45 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @Entity(tableName = "alarms")
 public class Alarm {
     private static final String TAG = "Alarm";
+
     @PrimaryKey
     @NonNull
     public int id;
+
     @ColumnInfo(name = "hour_of_day")
     public int hourOfDay;
+
     @ColumnInfo(name = "minute")
     public int minute;
+
     @ColumnInfo(name = "vibrate")
     public boolean vibrate = false;
+
     @ColumnInfo(name = "song_path")
     public String songPath;
+
     @ColumnInfo(name = "alarmVolume")
     public int alarmVolume = 50;
+
     @ColumnInfo(name = "exercise_path")
     public String exercisePath;
+
     @ColumnInfo(name = "exerciseVolume")
     public int exerciseVolume = 50;
+
     @ColumnInfo(name = "brightness")
     public int brightness = 50;
+
     @ColumnInfo(name = "exercise")
     public int exercise = 0;
+
     @ColumnInfo(name = "enabled")
     public boolean enabled;
 
@@ -63,43 +77,83 @@ public class Alarm {
         this.setNextRun(defaultRun);
     }
 
-    private static List<Alarm> loadAllAlarms(int id, Context context) {
+    private static List<Alarm> searchAlarm(int id, Context context) {
         return AlarmDatabase.getInstance(context).alarmDao().getAlarmByID(id);
     }
 
-    // TODO:
+    // TODO: There is a discrepancy between loadAlarm and loadAll Alarms here
     public static Single<Alarm> loadAlarm(int id, Context context) {
-        return Single.fromCallable(() -> loadAllAlarms(id, context)).subscribeOn(Schedulers.io()).map(l -> l.get(0));
+        return Single.fromCallable(() -> searchAlarm(id, context)).subscribeOn(Schedulers.io()).map(l -> l.get(0));
     }
 
     // Main logic that is called when the alarm is running, since called from an intent, static
-    static public void runAlarm(Context context, Intent intent) {
+    public static void runAlarm(Context context, Intent intent) {
         // TODO DOM PUT WEBSOCKET HERE FOR FULL PATH
+        Log.d(TAG, "runAlarm: " + intent.getExtras().keySet());
+        int alarmID = intent.getExtras().getInt("ID");
         // TODO: get rid of this debug text
-        Toast.makeText(context, "ALARM", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "ALARM ID" + alarmID, Toast.LENGTH_LONG).show();
 
-        String alarmID = intent.getExtras().getString(("ID"));
         Log.d(TAG, "runAlarm: Received Alarm ID: " + alarmID);
 
-        // TODO: get alarm information from SQL
-        Log.d(TAG, "runAlarm: Searching for alarm...");
 
-        // Make a window
-        // TODO: this doesn't work for the lock screen just yet
-        WindowManager.LayoutParams p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View myView = inflater.inflate(R.layout.activity_alarm, null, false);
-        Button butt = myView.findViewById(R.id.alarmDismissButton);
-        windowManager.addView(myView, p);
-        butt.setOnClickListener(v -> {
-            windowManager.removeView(myView);
-            dismissAlarm(context);
+        // TODO: get alarm information from SQL
+        Log.d(TAG, "runAlarm: Building Alarm");
+        Single<Alarm> alarmSingle = loadAlarm(alarmID, context);
+        Disposable disposable = alarmSingle.observeOn(AndroidSchedulers.mainThread()).subscribe(runningAlarm -> {
+            // Check to see if the alarm is actually disabled
+            if (!runningAlarm.enabled){
+                return;
+            }
+            // Set up Media Players for Alarm Music
+            Uri alarmSong = Uri.parse(runningAlarm.songPath);
+            MediaPlayer alarmMp = MediaPlayer.create(context, alarmSong);
+            alarmMp.setVolume(runningAlarm.alarmVolume, runningAlarm.alarmVolume);
+            alarmMp.setLooping(true);
+            alarmMp.setScreenOnWhilePlaying(true);
+            MediaPlayer exerciseMp;
+            Uri exerciseSong;
+            boolean hasExerciseSong = false;
+            if (runningAlarm.exercisePath != null) {
+                exerciseSong = Uri.parse(runningAlarm.exercisePath);
+                exerciseMp = MediaPlayer.create(context, exerciseSong);
+                exerciseMp.setVolume(runningAlarm.exerciseVolume, runningAlarm.alarmVolume);
+                exerciseMp.setLooping(true);
+                exerciseMp.setScreenOnWhilePlaying(true);
+                hasExerciseSong = true;
+            }
+
+            // Play Music
+            Log.d(TAG, "runAlarm: playing music");
+            alarmMp.start();
+
+            // Make a window
+            // TODO: this doesn't work for the lock screen just yet
+            WindowManager.LayoutParams p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View myView = inflater.inflate(R.layout.activity_alarm, null, false);
+            Button btnDismiss = myView.findViewById(R.id.alarmDismissButton);
+            windowManager.addView(myView, p);
+            btnDismiss.setOnClickListener(v -> {
+                // TODO: add logic for disabling dismiss Button
+                if (false) {
+                    Toast.makeText(context, "HAHA GET REKT", Toast.LENGTH_SHORT).show();
+                }
+                alarmMp.stop();
+                windowManager.removeView(myView);
+                exitAlarm(context);
+            });
+
+        }, e -> {
+            Log.e(TAG, "Alarm Load: ", e);
         });
+
+
     }
 
-    static public void dismissAlarm(Context context) {
-        Log.d(TAG, "Alarm: Dismissing alarm");
+    static public void exitAlarm(Context context) {
+        Log.d(TAG, "Alarm: Exiting alarm");
         Intent intent = new Intent(context, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -110,7 +164,6 @@ public class Alarm {
         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(activity, AlarmReceiver.class);
         intent.putExtra("ID", id);
-        // TODO: Request Codes must all be unique
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, id, intent, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, getUnixTime(), pendingIntent);
     }
@@ -134,7 +187,7 @@ public class Alarm {
             AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
             int currMax = alarmDao.getMaxAlarm();
             if (currMax == 0) {
-                this.id = 100;
+                this.id = 101;
             } else {
                 this.id = currMax + 1;
             }

@@ -24,7 +24,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.heartratealarm.alarm.Alarm;
-import com.example.heartratealarm.alarm.AlarmDatabase;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -42,7 +41,6 @@ public class EditAlarmActivity extends AppCompatActivity {
     private static final int REQ_PICK_EXERCISE = 2;
     private static final int REQ_STORAGE_PERMS = 3;
     private static final String TAG = "EditAlarmActivity";
-    private AlarmDatabase db;
     private Disposable readerDisposable;
     private Disposable writerDisposable;
     Alarm alarm;
@@ -155,7 +153,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         });
 
         Button btnExerciseSong = this.findViewById(R.id.exerciseMusicButton);
-        //TODO: SET SONG
+        //TODO: SET SONG WORDS
         btnExerciseSong.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -168,6 +166,7 @@ public class EditAlarmActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "No Song Selected", Toast.LENGTH_LONG).show();
             } else {
                 alarm.enabled = true;
+                alarm.enableAlarm(this);
                 if (updateFlag) {
                     writerDisposable = alarm.updateAlarm(getApplicationContext());
                 } else {
