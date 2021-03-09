@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
@@ -88,23 +89,19 @@ public class Alarm {
 
     // Main logic that is called when the alarm is running, since called from an intent, static
     public static void runAlarm(Context context, Intent intent) {
-        // TODO DOM PUT WEBSOCKET HERE FOR FULL PATH
-        Log.d(TAG, "runAlarm: " + intent.getExtras().keySet());
+        // Get alarm information from SQL
         int alarmID = intent.getExtras().getInt("ID");
-        // TODO: get rid of this debug text
-        Toast.makeText(context, "ALARM ID" + alarmID, Toast.LENGTH_LONG).show();
-
         Log.d(TAG, "runAlarm: Received Alarm ID: " + alarmID);
-
-
-        // TODO: get alarm information from SQL
         Log.d(TAG, "runAlarm: Building Alarm");
         Single<Alarm> alarmSingle = loadAlarm(alarmID, context);
+
+        // Actual Alarm Running Happens Here
         Disposable disposable = alarmSingle.observeOn(AndroidSchedulers.mainThread()).subscribe(runningAlarm -> {
             // Check to see if the alarm is actually disabled
             if (!runningAlarm.enabled){
                 return;
             }
+
             // Set up Media Players for Alarm Music
             Uri alarmSong = Uri.parse(runningAlarm.songPath);
             MediaPlayer alarmMp = MediaPlayer.create(context, alarmSong);
@@ -127,22 +124,29 @@ public class Alarm {
             Log.d(TAG, "runAlarm: playing music");
             alarmMp.start();
 
-            // Make a window
-            // TODO: this doesn't work for the lock screen just yet
+            // TODO: Connect to Mirror
+            AlarmJson json = new AlarmJson(runningAlarm.exercise, runningAlarm.brightness);
+
+
+            // TODO: Query and get information on exercising queue
+
+            // Make a window, TODO: test with lock screen
             WindowManager.LayoutParams p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
             WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View myView = inflater.inflate(R.layout.activity_alarm, null, false);
             Button btnDismiss = myView.findViewById(R.id.alarmDismissButton);
+            // TODO: maybe change button color to be greyed out?
             windowManager.addView(myView, p);
+            // TODO: add logic for disabling dismiss Button
             btnDismiss.setOnClickListener(v -> {
-                // TODO: add logic for disabling dismiss Button
                 if (false) {
-                    Toast.makeText(context, "HAHA GET REKT", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Go To Mirror and Exercise!", Toast.LENGTH_SHORT).show();
+                }else{
+                    alarmMp.stop();
+                    windowManager.removeView(myView);
+                    exitAlarm(context);
                 }
-                alarmMp.stop();
-                windowManager.removeView(myView);
-                exitAlarm(context);
             });
 
         }, e -> {
