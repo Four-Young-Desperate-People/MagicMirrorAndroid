@@ -166,6 +166,7 @@ public class Alarm {
         intent.putExtra("ID", id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, id, intent, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, getUnixTime(), pendingIntent);
+        Log.d(TAG, "enableAlarm: " + getUnixTime());
     }
 
     public long getUnixTime() {
@@ -174,6 +175,8 @@ public class Alarm {
         calendar.setTimeInMillis(currTime);
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         if (currTime >= calendar.getTimeInMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
