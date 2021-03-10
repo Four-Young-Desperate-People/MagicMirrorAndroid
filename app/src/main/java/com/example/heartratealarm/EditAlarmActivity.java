@@ -224,6 +224,11 @@ public class EditAlarmActivity extends AppCompatActivity {
             }
         });
 
+        //TODO:
+        Button buttonDelete = this.findViewById(R.id.deleteButton);
+        buttonDelete.setOnClickListener(v -> {
+            Toast.makeText(getApplicationContext(), "GIVE ME FUNCTION PLEASE", Toast.LENGTH_SHORT).show();
+        });
 
     }
 

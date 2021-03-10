@@ -254,6 +254,16 @@ public class Alarm {
         Log.d(TAG, "enableAlarm: " + getUnixTime());
     }
 
+    //TODO: DELETE CUZ THIS IS DEBUG CODE
+    public void enableAlarm(Activity activity, Calendar calendar) {
+        AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(activity, AlarmReceiver.class);
+        intent.putExtra("ID", id);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, id, intent, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        Log.d(TAG, "enableAlarm: " + calendar.getTimeInMillis());
+    }
+
     public long getUnixTime() {
         Calendar calendar = Calendar.getInstance();
         long currTime = Calendar.getInstance().getTimeInMillis();

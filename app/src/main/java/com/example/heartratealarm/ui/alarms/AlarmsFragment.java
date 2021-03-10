@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ import com.example.heartratealarm.alarm.AlarmDatabase;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -44,6 +46,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 new ViewModelProvider(this).get(AlarmsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_alarms, container, false);
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
+        root.findViewById(R.id.magicButton).setOnClickListener(this);
 
         // populate our list of alarms
         readerDisposable = Single.just(requireContext()).subscribeOn(Schedulers.io()).map(c -> {
@@ -67,6 +70,17 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(requireActivity(), EditAlarmActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.magicButton:
+                Toast.makeText(getContext(), "ARE YOU HAPPY DOM? T-MINUS 10 SECONDS", Toast.LENGTH_SHORT).show();
+                Single<Alarm> single;
+                int alarmID = 101;
+                single = Alarm.loadAlarm(alarmID, requireContext());
+                readerDisposable = single.observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(Calendar.getInstance().getTime());
+                    calendar.add(Calendar.SECOND, 10);
+                    a.enableAlarm(requireActivity(), calendar);
+                }, e -> Log.e(TAG, "Insta-Alarm: ", e));
         }
     }
 
