@@ -166,12 +166,13 @@ public class EditAlarmActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "No Song Selected", Toast.LENGTH_LONG).show();
             } else {
                 alarm.enabled = true;
-                alarm.enableAlarm(this);
                 if (updateFlag) {
                     writerDisposable = alarm.updateAlarm(getApplicationContext());
                 } else {
                     writerDisposable = alarm.saveAlarm(getApplicationContext());
                 }
+                alarm.enableAlarm(this);
+                writerDisposable = alarm.updateAlarm(getApplicationContext());
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

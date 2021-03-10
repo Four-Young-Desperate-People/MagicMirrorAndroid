@@ -2,7 +2,11 @@ package com.example.heartratealarm.websocket;
 
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -20,6 +24,9 @@ public class WebSocketBase extends WebSocketListener {
     private boolean stop;
 
     private final WebSocket webSocket;
+
+    // An interval observable that should get disposed on a websocket error.
+    private Disposable pingDisposable;
 
     public WebSocketBase() {
         Request request = new Request.Builder().url(ENDPOINT)
@@ -57,11 +64,20 @@ public class WebSocketBase extends WebSocketListener {
     }
 
     public Observable<String> getMessageObservable() {
-        return Observable.fromCallable(this::getMessage).retryUntil(() -> {
+        return Observable.fromCallable(this::getMessage).repeatUntil(() -> {
             synchronized (stopLock) {
                 return stop;
             }
         }).subscribeOn(Schedulers.newThread());
+    }
+
+    public void interval(Consumer<Long> f) {
+        pingDisposable = Observable.interval(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribe(f,
+                        e -> {
+                            Log.e(TAG, "Issue with interval", e);
+                        });
     }
 
     @Override
@@ -86,6 +102,9 @@ public class WebSocketBase extends WebSocketListener {
         synchronized (messageLock) {
             messageLock.notify();
         }
+        if (pingDisposable != null && !pingDisposable.isDisposed()) {
+            pingDisposable.dispose();
+        }
     }
 
     @Override
@@ -101,6 +120,9 @@ public class WebSocketBase extends WebSocketListener {
         }
         synchronized (messageLock) {
             messageLock.notify();
+        }
+        if (pingDisposable != null && !pingDisposable.isDisposed()) {
+            pingDisposable.dispose();
         }
     }
 }
