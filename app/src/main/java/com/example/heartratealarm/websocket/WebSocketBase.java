@@ -17,7 +17,8 @@ import okio.ByteString;
 
 public class WebSocketBase extends WebSocketListener {
     private static final String TAG = "WebSocketBase2";
-    private static final String ENDPOINT = "ws://192.168.1.92:3683/android";
+    private static final String ENDPOINT = "ws://192.168.1.77:3683/android";
+    //private static final String ENDPOINT = "ws://192.168.1.92:3683/android";
     private final Object messageLock;
     private String message;
     private final Object stopLock;
