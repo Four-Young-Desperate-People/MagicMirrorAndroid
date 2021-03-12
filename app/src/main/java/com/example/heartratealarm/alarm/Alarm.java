@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.VibrationEffect;
@@ -117,6 +118,11 @@ public class Alarm {
                 return;
             }
 
+            AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            int OGVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+            // TODO: disable volume buttons
+
             // Begin Vibrating if Vibrating is on
             Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if (runningAlarm.vibrate){
@@ -174,7 +180,8 @@ public class Alarm {
                 windowManager.removeView(myView);
                 exitAlarm(context);
                 vibe.cancel();
-                // TODO, either cancel next alarm or set next alarm
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, OGVolume, 0);
+                // TODO, either cancel next alarm or set next alarm BLARG
                 ws.close();
             };
 
