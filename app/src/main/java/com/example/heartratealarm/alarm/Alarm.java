@@ -27,6 +27,7 @@ import com.example.heartratealarm.MainActivity;
 import com.example.heartratealarm.R;
 import com.example.heartratealarm.websocket.GenericData;
 import com.example.heartratealarm.websocket.WebSocketBase;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -224,13 +225,13 @@ public class Alarm {
 
             windowManager.addView(myView, p);
 
-            // TODO define as a custom colour in colors.xml. Dom doesn't really care about it rn.
             btnDismiss.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
             btnDismiss.setOnClickListener(v -> {
                 if (allowDismiss.get()) {
                     stop.run();
                 } else {
-                    Toast.makeText(context, "Go To Mirror and Exercise!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "runAlarm: blarg blarg blarg");
+                    Toast.makeText(myView.getContext(), "Go To Mirror and Exercise!", Toast.LENGTH_SHORT).show();
                 }
             });
 

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     private static final String TAG = "SmartMirrorSettings";
     MagicMirrorUISettings settings = new MagicMirrorUISettings();
     private SmartMirrorViewModel smartMirrorViewModel = new SmartMirrorViewModel();
+    Disposable d;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -41,9 +43,8 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         root.findViewById(R.id.cardBottomCenter).setOnClickListener(this);
         root.findViewById(R.id.cardBottomRight).setOnClickListener(this);
         root.findViewById(R.id.btnSaveMirror).setOnClickListener(this);
-        root.findViewById(R.id.btnMirrorSync).setOnClickListener(this);
 
-        populate(root);
+        sync(root);
         return root;
     }
 
@@ -74,37 +75,6 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btnMirrorSync) {
-            // Uncommnent incase you want to test locally;
-            //String json = "{\"method\":\"update_modules_display\",\"data\":{\"clock\":{\"position\":\"top_right\",\"visible\":\"true\"},\"compliments\":{\"position\":\"top_left\",\"visible\":\"true\"},\"currentweather\":{\"position\":\"top_center\",\"visible\":\"false\"},\"newsfeed\":{\"position\":\"middle_center\",\"visible\":\"true\"},\"weatherforecast\":{\"position\":\"bottom_left\",\"visible\":\"false\"}}}";
-            // settings.fromJson(json);
-            // populate(v.getRootView());
-
-            WebSocketBase ws = new WebSocketBase();
-            Gson gson = new Gson();
-            GenericData<Boolean> gd = new GenericData("get_modules_display", false);
-            String json = gson.toJson(gd);
-            // Its smarter to keep this around and properly dispose of it, but I'm tied. Yolo.
-            Disposable d = ws.getMessageObservable().map(s -> {
-                Log.i(TAG, "We got data from the Pi");
-                settings.fromJson(s);
-                return true;
-            }).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(a -> {
-                        populate(v.getRootView());
-                        ws.close();
-                    }, e -> {
-                        Log.e(TAG, "Got an error trying to read data from Pi", e);
-                        ws.close();
-                    });
-
-            // Need to set up the listener before we send, otherwise we have a race condition and
-            // require to have 2 clicks.
-            ws.send(json);
-            return;
-        }
-
-
         if (v.getId() == R.id.btnSaveMirror) {
             String json = settings.toJson();
             WebSocketBase ws = new WebSocketBase();
@@ -177,6 +147,39 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
                     return false;
                 });
                 break;
+        }
+    }
+
+    private void sync(View v){
+        Toast.makeText(v.getContext(), "Syncing with mirror...", Toast.LENGTH_LONG).show();
+        WebSocketBase ws = new WebSocketBase();
+        Gson gson = new Gson();
+        GenericData<Boolean> gd = new GenericData("get_modules_display", false);
+        String json = gson.toJson(gd);
+        d = ws.getMessageObservable().map(s -> {
+            Log.i(TAG, "We got data from the Pi");
+            settings.fromJson(s);
+            return true;
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(a -> {
+                    populate(v.getRootView());
+                    ws.close();
+                }, e -> {
+                    Log.e(TAG, "Got an error trying to read data from Pi", e);
+                    Toast.makeText(v.getContext(), "Could not find mirror!", Toast.LENGTH_SHORT).show();
+                    ws.close();
+                });
+
+        // Need to set up the listener before we send, otherwise we have a race condition and
+        // require to have 2 clicks.
+        ws.send(json);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (d != null && !d.isDisposed()) {
+            d.dispose();
         }
     }
 }

@@ -215,6 +215,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         Menu menu = popup.getMenu();
         menu.add("Squats");
         menu.add("Jumping Jacks");
+        menu.add("Burpees");
         exerciseCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
