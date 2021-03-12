@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,6 +117,13 @@ public class Alarm {
                 return;
             }
 
+            // Begin Vibrating if Vibrating is on
+            Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            if (runningAlarm.vibrate){
+                Log.d(TAG, "runAlarm: I GOTTA VIBE");
+                vibe.vibrate(VibrationEffect.createWaveform(new long[]{0, 1000, 1000}, 0));
+            }
+
             // Set up Media Players for Alarm Music
             Uri alarmSong = Uri.parse(runningAlarm.songPath);
             MediaPlayer alarmMp = MediaPlayer.create(context, alarmSong);
@@ -164,6 +173,8 @@ public class Alarm {
                 }
                 windowManager.removeView(myView);
                 exitAlarm(context);
+                vibe.cancel();
+                // TODO, either cancel next alarm or set next alarm
                 ws.close();
             };
 
