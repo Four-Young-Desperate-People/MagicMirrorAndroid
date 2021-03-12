@@ -11,6 +11,7 @@ public class AlarmJson {
     static {
         map.put(0, "squats.gif");
         map.put(1, "jumping_jacks.gif");
+        map.put(2, "burpees.gif");
     }
 
     @SerializedName("LED")
@@ -19,13 +20,13 @@ public class AlarmJson {
     @SerializedName("ExerciseToDo")
     String exercise;
 
-    // TODO: ACTUALLY PICK A HEARTRATE
     @SerializedName("HRThreshold")
-    int hrThresh = 150;
+    int hrThresh;
 
-    public AlarmJson(int exercise, int w) {
+    public AlarmJson(int exercise, int w, int hrThresh) {
         this.exercise = map.get(exercise);
         ledJson.w = w;
+        this.hrThresh = hrThresh;
     }
 
 }

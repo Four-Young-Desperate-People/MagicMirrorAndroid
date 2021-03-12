@@ -62,13 +62,13 @@ public class Alarm {
     @ColumnInfo(name = "song_path")
     public String songPath;
 
-    @ColumnInfo(name = "alarmVolume")
+    @ColumnInfo(name = "alarm_volume")
     public float alarmVolume = 0.5f;
 
     @ColumnInfo(name = "exercise_path")
     public String exercisePath;
 
-    @ColumnInfo(name = "exerciseVolume")
+    @ColumnInfo(name = "exercise_volume")
     public float exerciseVolume = 0.5f;
 
     @ColumnInfo(name = "brightness")
@@ -79,6 +79,9 @@ public class Alarm {
 
     @ColumnInfo(name = "enabled")
     public boolean enabled;
+
+    @ColumnInfo(name = "hr_target")
+    public int hrTarget = 90;
 
 
     public Alarm() {
@@ -215,7 +218,7 @@ public class Alarm {
             });
 
             // start this whole shebang
-            AlarmJson json = new AlarmJson(runningAlarm.exercise, runningAlarm.brightness);
+            AlarmJson json = new AlarmJson(runningAlarm.exercise, runningAlarm.brightness, runningAlarm.hrTarget);
             GenericData<AlarmJson> gd = new GenericData("alarm_start", json);
             ws.send(gson.toJson(gd));
 
@@ -340,7 +343,9 @@ public class Alarm {
                 ", exercisePath='" + exercisePath + '\'' +
                 ", exerciseVolume=" + exerciseVolume +
                 ", brightness=" + brightness +
+                ", exercise=" + exercise +
                 ", enabled=" + enabled +
+                ", hrTarget=" + hrTarget +
                 '}';
     }
 }
