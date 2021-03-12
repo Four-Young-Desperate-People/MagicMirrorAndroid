@@ -302,28 +302,30 @@ public class Alarm {
     }
 
     // Saves the alarm to sql
-    public Disposable saveAlarm(Context context) {
+    public Disposable saveAlarm(Context context, Activity activity) {
         return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
             AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
             int currMax = alarmDao.getMaxAlarm();
             if (currMax == 0) {
-                this.id = 101;
+                t.id = 101;
             } else {
-                this.id = currMax + 1;
+                t.id = currMax + 1;
             }
             Log.d(TAG, "saveAlarm: " + t.toString());
             alarmDao.insert(t);
+            t.enableAlarm(activity);
         }, e -> {
             Log.e(TAG, "saveAlarm: ", e);
         });
     }
 
     // Updates an exiting alarm in sql
-    public Disposable updateAlarm(Context context) {
+    public Disposable updateAlarm(Context context, Activity activity) {
         return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
             AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
             Log.d(TAG, "updateAlarm: " + t.toString());
             alarmDao.update(t);
+            t.enableAlarm(activity);
         }, e -> {
             Log.e(TAG, "updateAlarm: ", e);
         });

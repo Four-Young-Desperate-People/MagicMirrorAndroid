@@ -103,10 +103,8 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
             enabled.setGravity(Gravity.CENTER_VERTICAL);
             enabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 alarm.enabled = isChecked;
-                writerDisposable = alarm.updateAlarm(requireContext());
-                if (alarm.enabled) {
-                    alarm.enableAlarm(requireActivity());
-                } else{
+                writerDisposable = alarm.updateAlarm(requireContext(), requireActivity());
+                if (!isChecked){
                     alarm.disableAlarm(requireActivity());
                 }
             });

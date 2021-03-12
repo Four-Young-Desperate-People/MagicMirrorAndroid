@@ -167,12 +167,10 @@ public class EditAlarmActivity extends AppCompatActivity {
             } else {
                 alarm.enabled = true;
                 if (updateFlag) {
-                    writerDisposable = alarm.updateAlarm(getApplicationContext());
+                    writerDisposable = alarm.updateAlarm(getApplicationContext(), this);
                 } else {
-                    writerDisposable = alarm.saveAlarm(getApplicationContext());
+                    writerDisposable = alarm.saveAlarm(getApplicationContext(), this);
                 }
-                alarm.enableAlarm(this);
-                writerDisposable = alarm.updateAlarm(getApplicationContext());
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
