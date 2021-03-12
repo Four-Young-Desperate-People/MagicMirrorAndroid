@@ -232,10 +232,15 @@ public class EditAlarmActivity extends AppCompatActivity {
             }
         });
 
-        //TODO:
         Button buttonDelete = this.findViewById(R.id.deleteButton);
         buttonDelete.setOnClickListener(v -> {
-            Toast.makeText(getApplicationContext(), "GIVE ME FUNCTION PLEASE", Toast.LENGTH_SHORT).show();
+            alarm.disableAlarm(this);
+            writerDisposable = alarm.deleteAlarm(getApplicationContext());
+            Toast.makeText(getApplicationContext(), "Alarm Deleted", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
         });
 
     }

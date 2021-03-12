@@ -46,6 +46,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 new ViewModelProvider(this).get(AlarmsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_alarms, container, false);
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
+        // TODO: remove magic button
         root.findViewById(R.id.magicButton).setOnClickListener(this);
 
         // populate our list of alarms
@@ -84,7 +85,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    // TODO: where ya'll fuckin makin the list of all alarms
+    // TODO: where ya'll make the list of all alarms
     public void listAlarms() {
         LinearLayout alarmsList = requireView().findViewById(R.id.alarmsList);
         int count = 0;
@@ -105,6 +106,8 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 writerDisposable = alarm.updateAlarm(requireContext());
                 if (alarm.enabled) {
                     alarm.enableAlarm(requireActivity());
+                } else{
+                    alarm.disableAlarm(requireActivity());
                 }
             });
             cardLayout.addView(enabled);

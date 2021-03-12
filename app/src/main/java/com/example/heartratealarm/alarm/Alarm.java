@@ -268,6 +268,24 @@ public class Alarm {
         Log.d(TAG, "enableAlarm: " + calendar.getTimeInMillis());
     }
 
+    public void disableAlarm(Activity activity){
+        AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(activity, AlarmReceiver.class);
+        intent.putExtra("ID", id);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, id, intent, 0);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    public Disposable deleteAlarm(Context context){
+        return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
+            AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
+            Log.d(TAG, "deleteAlarm: " + t.id);
+            alarmDao.delete(this);
+        }, e -> {
+            Log.e(TAG, "deleteAlarm: ", e);
+        });
+    }
+
     public long getUnixTime() {
         Calendar calendar = Calendar.getInstance();
         long currTime = Calendar.getInstance().getTimeInMillis();
