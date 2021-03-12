@@ -63,13 +63,13 @@ public class Alarm {
     public String songPath;
 
     @ColumnInfo(name = "alarmVolume")
-    public int alarmVolume = 50;
+    public float alarmVolume = 0.5f;
 
     @ColumnInfo(name = "exercise_path")
     public String exercisePath;
 
     @ColumnInfo(name = "exerciseVolume")
-    public int exerciseVolume = 50;
+    public float exerciseVolume = 0.5f;
 
     @ColumnInfo(name = "brightness")
     public int brightness = 50;

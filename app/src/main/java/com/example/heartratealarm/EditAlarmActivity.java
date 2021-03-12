@@ -181,12 +181,12 @@ public class EditAlarmActivity extends AppCompatActivity {
         });
 
         Slider sliderAlarmVolume = this.findViewById(R.id.alarmVolumeSlider);
-        sliderAlarmVolume.setValue(alarm.alarmVolume);
-        sliderAlarmVolume.addOnChangeListener((slider, value, fromUser) -> alarm.alarmVolume = (int) value);
+        sliderAlarmVolume.setValue(alarm.alarmVolume * 100);
+        sliderAlarmVolume.addOnChangeListener((slider, value, fromUser) -> alarm.alarmVolume = (float)(value / 100.0));
 
         Slider sliderExerciseVolume = this.findViewById(R.id.exerciseVolumeSlider);
-        sliderExerciseVolume.setValue(alarm.exerciseVolume);
-        sliderExerciseVolume.addOnChangeListener((slider, value, fromUser) -> alarm.exerciseVolume = (int) value);
+        sliderExerciseVolume.setValue(alarm.exerciseVolume * 100);
+        sliderExerciseVolume.addOnChangeListener((slider, value, fromUser) -> alarm.exerciseVolume = (float)(value / 100.0));
 
         SwitchMaterial vibrateSwitch = this.findViewById(R.id.vibrateSwitch);
         vibrateSwitch.setChecked(alarm.vibrate);
