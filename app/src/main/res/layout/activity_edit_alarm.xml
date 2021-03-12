@@ -176,7 +176,7 @@
             android:layout_height="wrap_content"
             android:text="Exercise Music"
             android:textAlignment="viewStart"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/alarmVolumeSlider" />
@@ -210,6 +210,13 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.33" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.66" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/exerciseCardView"
             android:layout_width="0dp"
@@ -229,6 +236,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </com.google.android.material.card.MaterialCardView>
+
+        <Button
+            android:id="@+id/clearExerciseMusicButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:text="Clear"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/exerciseMusicButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/exerciseMusicButton"
+            app:layout_constraintTop_toTopOf="@+id/exerciseMusicButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

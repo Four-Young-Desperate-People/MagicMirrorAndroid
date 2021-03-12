@@ -192,6 +192,9 @@ public class EditAlarmActivity extends AppCompatActivity {
         sliderHr.setValue(alarm.hrTarget);
         sliderHr.addOnChangeListener((slider, value, fromUser) -> alarm.hrTarget = (int)value);
 
+        Button clearExerciseMusicButton = this.findViewById(R.id.clearExerciseMusicButton);
+        clearExerciseMusicButton.setOnClickListener(v -> alarm.exercisePath = null);
+
         SwitchMaterial vibrateSwitch = this.findViewById(R.id.vibrateSwitch);
         vibrateSwitch.setChecked(alarm.vibrate);
         vibrateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.vibrate = isChecked);
