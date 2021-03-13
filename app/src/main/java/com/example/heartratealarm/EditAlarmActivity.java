@@ -9,11 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.PopupMenu;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -25,7 +22,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.heartratealarm.alarm.Alarm;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -42,10 +38,10 @@ public class EditAlarmActivity extends AppCompatActivity {
     private static final int REQ_PICK_EXERCISE = 2;
     private static final int REQ_STORAGE_PERMS = 3;
     private static final String TAG = "EditAlarmActivity";
-    private Disposable readerDisposable;
-    private Disposable writerDisposable;
     Alarm alarm;
     boolean updateFlag;
+    private Disposable readerDisposable;
+    private Disposable writerDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +171,8 @@ public class EditAlarmActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> {
             if (alarm.songPath == null) {
                 Toast.makeText(getApplicationContext(), "No Song Selected", Toast.LENGTH_LONG).show();
+            } else if (!alarm.squats && !alarm.jumpingJacks && !alarm.burpees) {
+                Toast.makeText(getApplicationContext(), "Please select at least one exercise", Toast.LENGTH_LONG).show();
             } else {
                 alarm.enabled = true;
                 if (updateFlag) {
@@ -196,6 +194,18 @@ public class EditAlarmActivity extends AppCompatActivity {
         Slider sliderExerciseVolume = this.findViewById(R.id.exerciseVolumeSlider);
         sliderExerciseVolume.setValue(alarm.exerciseVolume * 100);
         sliderExerciseVolume.addOnChangeListener((slider, value, fromUser) -> alarm.exerciseVolume = (float) (value / 100.0));
+
+        CheckBox squatCheck = this.findViewById(R.id.squatCheck);
+        squatCheck.setChecked(alarm.squats);
+        squatCheck.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.squats = isChecked);
+
+        CheckBox jJackCheck = this.findViewById(R.id.jJackCheck);
+        jJackCheck.setChecked(alarm.jumpingJacks);
+        jJackCheck.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.jumpingJacks = isChecked);
+
+        CheckBox burpeeCheck = this.findViewById(R.id.burpeeCheck);
+        burpeeCheck.setChecked(alarm.burpees);
+        burpeeCheck.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.burpees = isChecked);
 
         Slider sliderHr = this.findViewById(R.id.hrSlider);
         sliderHr.setValue(alarm.hrTarget);
@@ -219,30 +229,7 @@ public class EditAlarmActivity extends AppCompatActivity {
             timeCountdown.setText("Ring in: " + alarm.timeToRun());
         });
 
-        List<String> exercises = Arrays.asList("Squats", "Jumping Jacks");
-        MaterialCardView exerciseCard = this.findViewById(R.id.exerciseCardView);
-        TextView exerciseText = this.findViewById(R.id.exerciseText);
-        exerciseText.setText(exercises.get(alarm.exercise));
-        PopupMenu popup = new PopupMenu(getApplicationContext(), exerciseCard);
-        Menu menu = popup.getMenu();
-        menu.add("Squats");
-        menu.add("Jumping Jacks");
-        menu.add("Burpees");
-        exerciseCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.show();
-            }
-        });
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Log.d(TAG, "onMenuItemClick: " + exercises.indexOf(item.getTitle().toString()));
-                alarm.exercise = exercises.indexOf(item.getTitle().toString());
-                exerciseText.setText(item.getTitle());
-                return false;
-            }
-        });
+        List<String> exercises = Arrays.asList("Squats", "Jumping Jacks", "Burpees");
 
         Button buttonDelete = this.findViewById(R.id.deleteButton);
         buttonDelete.setOnClickListener(v -> {

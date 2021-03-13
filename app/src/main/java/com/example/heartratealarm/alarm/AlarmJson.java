@@ -2,8 +2,11 @@ package com.example.heartratealarm.alarm;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class AlarmJson {
     static Map<Integer, String> map = new HashMap<>();
@@ -23,8 +26,14 @@ public class AlarmJson {
     @SerializedName("HRThreshold")
     int hrThresh;
 
-    public AlarmJson(int exercise, int w, int hrThresh) {
-        this.exercise = map.get(exercise);
+    public AlarmJson(int w, int hrThresh, boolean[] exercises) {
+        List<Integer> validExercises = new ArrayList<>();
+        for (int i = 0; i < exercises.length; i++) {
+            if (exercises[i]) {
+                validExercises.add(i);
+            }
+        }
+        this.exercise = map.get(validExercises.get(new Random().nextInt(validExercises.size())));
         ledJson.w = w;
         this.hrThresh = hrThresh;
     }

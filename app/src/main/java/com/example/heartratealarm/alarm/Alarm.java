@@ -77,8 +77,14 @@ public class Alarm {
     @ColumnInfo(name = "brightness")
     public int brightness = 50;
 
-    @ColumnInfo(name = "exercise")
-    public int exercise = 0;
+    @ColumnInfo(name = "squats")
+    public boolean squats = true;
+
+    @ColumnInfo(name = "jumping_jacks")
+    public boolean jumpingJacks = true;
+
+    @ColumnInfo(name = "burpees")
+    public boolean burpees = true;
 
     @ColumnInfo(name = "enabled")
     public boolean enabled;
@@ -197,6 +203,7 @@ public class Alarm {
                     Type type = new TypeToken<GenericData<Boolean>>() {
                     }.getType();
                     GenericData<Boolean> shouldWeQuite = gson.fromJson(s, type);
+                    // TODO: fix the exercise music volume here
                     if (shouldWeQuite.data) {
                         alarmMp.stop();
                         if (hasExerciseSong) {
@@ -238,7 +245,7 @@ public class Alarm {
             });
 
             // start this whole shebang
-            AlarmJson json = new AlarmJson(runningAlarm.exercise, runningAlarm.brightness, runningAlarm.hrTarget);
+            AlarmJson json = new AlarmJson(runningAlarm.brightness, runningAlarm.hrTarget, new boolean[]{runningAlarm.squats, runningAlarm.jumpingJacks, runningAlarm.burpees});
             GenericData<AlarmJson> gd = new GenericData("alarm_start", json);
             ws.send(gson.toJson(gd));
 
@@ -384,7 +391,9 @@ public class Alarm {
                 ", exercisePath='" + exercisePath + '\'' +
                 ", exerciseVolume=" + exerciseVolume +
                 ", brightness=" + brightness +
-                ", exercise=" + exercise +
+                ", squats=" + squats +
+                ", jumpingJacks=" + jumpingJacks +
+                ", burpees=" + burpees +
                 ", enabled=" + enabled +
                 ", hrTarget=" + hrTarget +
                 '}';
