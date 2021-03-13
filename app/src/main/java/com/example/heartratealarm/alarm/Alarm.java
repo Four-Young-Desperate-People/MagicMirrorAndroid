@@ -108,7 +108,6 @@ public class Alarm {
         // Get alarm information from SQL
         int alarmID = intent.getExtras().getInt("ID");
         Log.d(TAG, "runAlarm: Received Alarm ID: " + alarmID);
-        Log.d(TAG, "runAlarm: Building Alarm");
         Single<Alarm> alarmSingle = loadAlarm(alarmID, context);
 
         // Actual Alarm Running Happens Here
@@ -146,7 +145,7 @@ public class Alarm {
                 exerciseMp.setLooping(true);
                 exerciseMp.setScreenOnWhilePlaying(true);
                 hasExerciseSong = true;
-                // This else looks retarted, but is needed to make these variables final lambda safe
+                // Else needed to make these variables final lambda safe
             } else {
                 hasExerciseSong = false;
                 exerciseMp = null;
@@ -158,10 +157,12 @@ public class Alarm {
 
             // Make a window, TODO: test with lock screen
             WindowManager.LayoutParams
-                    p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+                    p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                                                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                                                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
             WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View myView = inflater.inflate(R.layout.activity_alarm, null, false);
+            View myView = inflater.inflate(R.layout.activity_alarm, null);
             Button btnDismiss = myView.findViewById(R.id.alarmDismissButton);
 
             WebSocketBase ws = new WebSocketBase();
@@ -185,7 +186,7 @@ public class Alarm {
                 ws.close();
             };
 
-            Disposable iveStoppedGivingAFuck = ws.getMessageObservable().subscribe(s -> {
+            Disposable messageDisposable = ws.getMessageObservable().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
                 GenericData gd = gson.fromJson(s, GenericData.class);
                 if (gd.method.equals("pong")) {
                     missedCount.set(0);
@@ -215,6 +216,7 @@ public class Alarm {
                 Log.e(TAG, "Got an err from system websocket", e);
                 // duplicate code... sue me
                 allowDismiss.set(true);
+                btnDismiss.setText("DISMISS");
                 btnDismiss.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.purple_500));
             }, () -> {
                 Log.i(TAG, "Completed recieving from websocket completed");
@@ -226,10 +228,9 @@ public class Alarm {
                     int missed = missedCount.incrementAndGet();
                     Log.i(TAG, String.format("missed ping, current count %d", missed));
 
-                    // we have missed 3 pings. Sever is ignore us or is down. Enable the button.
+                    // we have missed 5 pings. Sever is ignore us or is down. Enable the button.
                     if (missed > 5) {
                         allowDismiss.set(true);
-                        btnDismiss.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.purple_500));
                     }
                 }
                 pinged.set(true);
@@ -244,6 +245,7 @@ public class Alarm {
             windowManager.addView(myView, p);
 
             btnDismiss.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+            btnDismiss.setText("GO TO MIRROR AND EXERCISE!");
             btnDismiss.setOnClickListener(v -> {
                 if (allowDismiss.get()) {
                     stop.run();
