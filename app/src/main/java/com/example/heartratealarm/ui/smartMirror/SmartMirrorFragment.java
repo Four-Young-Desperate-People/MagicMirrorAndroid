@@ -156,6 +156,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         Gson gson = new Gson();
         GenericData<Boolean> gd = new GenericData("get_modules_display", false);
         String json = gson.toJson(gd);
+        // TODO: disposing this onDestroy actually crashes the application if we're still in the middle of a sync
         d = ws.getMessageObservable().map(s -> {
             Log.i(TAG, "We got data from the Pi");
             settings.fromJson(s);
@@ -164,6 +165,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
                 .subscribe(a -> {
                     populate(v.getRootView());
                     ws.close();
+                    Log.d(TAG, "sync: done!");
                 }, e -> {
                     Log.e(TAG, "Got an error trying to read data from Pi", e);
                     Toast.makeText(v.getContext(), "Could not find mirror!", Toast.LENGTH_SHORT).show();

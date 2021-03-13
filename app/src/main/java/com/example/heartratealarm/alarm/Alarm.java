@@ -147,7 +147,7 @@ public class Alarm {
             if (runningAlarm.exercisePath != null) {
                 exerciseSong = Uri.parse(runningAlarm.exercisePath);
                 exerciseMp = MediaPlayer.create(context, exerciseSong);
-                exerciseMp.setVolume(runningAlarm.exerciseVolume, runningAlarm.alarmVolume);
+                exerciseMp.setVolume(runningAlarm.exerciseVolume, runningAlarm.exerciseVolume);
                 exerciseMp.setLooping(true);
                 exerciseMp.setScreenOnWhilePlaying(true);
                 hasExerciseSong = true;
@@ -257,8 +257,7 @@ public class Alarm {
                 if (allowDismiss.get()) {
                     stop.run();
                 } else {
-                    Log.d(TAG, "runAlarm: blarg blarg blarg");
-                    Toast.makeText(myView.getContext(), "Go To Mirror and Exercise!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "runAlarm: User tried to exit, denying");
                 }
             });
 
