@@ -217,10 +217,6 @@ public class EditAlarmActivity extends AppCompatActivity {
             btnExerciseSong.setText("EXERCISE MUSIC");
         });
 
-        SwitchMaterial vibrateSwitch = this.findViewById(R.id.vibrateSwitch);
-        vibrateSwitch.setChecked(alarm.vibrate);
-        vibrateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> alarm.vibrate = isChecked);
-
         TimePicker timePicker = this.findViewById(R.id.timePicker);
         timePicker.setHour(alarm.hourOfDay);
         timePicker.setMinute(alarm.minute);

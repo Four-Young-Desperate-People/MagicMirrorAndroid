@@ -58,9 +58,6 @@ public class Alarm {
     @ColumnInfo(name = "minute")
     public int minute;
 
-    @ColumnInfo(name = "vibrate")
-    public boolean vibrate = false;
-
     @ColumnInfo(name = "song_path")
     public String songPath;
 
@@ -126,14 +123,6 @@ public class Alarm {
             am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
             // TODO: disable volume buttons
 
-            // TODO: fix vibrating
-            // Begin Vibrating if Vibrating is on
-            Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            if (runningAlarm.vibrate) {
-                Log.d(TAG, "runAlarm: I GOTTA VIBE");
-                vibe.vibrate(VibrationEffect.createWaveform(new long[]{0, 1000, 1000}, 0));
-            }
-
             // Set up Media Players for Alarm Music
             Uri alarmSong = Uri.parse(runningAlarm.songPath);
             MediaPlayer alarmMp = MediaPlayer.create(context, alarmSong);
@@ -185,9 +174,7 @@ public class Alarm {
                 }
                 windowManager.removeView(myView);
                 exitAlarm(context);
-                vibe.cancel();
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, OGVolume, 0);
-                // TODO, either cancel next alarm or set next alarm BLARG
                 ws.close();
             };
 
@@ -389,7 +376,6 @@ public class Alarm {
         return "Alarm{" +
                 "id=" + id +
                 ", runTime=" + hourOfDay + ":" + minute +
-                ", vibrate=" + vibrate +
                 ", songPath='" + songPath + '\'' +
                 ", alarmVolume=" + alarmVolume +
                 ", exercisePath='" + exercisePath + '\'' +

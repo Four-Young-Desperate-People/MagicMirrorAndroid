@@ -151,15 +151,6 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/vibrateSwitch"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Vibrate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/alarmMusicButton" />
-
         <Button
             android:id="@+id/alarmMusicButton"
             android:layout_width="0dp"
@@ -185,14 +176,14 @@
             android:id="@+id/alarmVolumeSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:stepSize="1"
             android:value="50"
             android:valueFrom="0"
             android:valueTo="100"
-            android:stepSize="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/vibrateSwitch" />
+            app:layout_constraintTop_toBottomOf="@+id/alarmMusicButton" />
 
         <TextView
             android:id="@+id/textView5"
