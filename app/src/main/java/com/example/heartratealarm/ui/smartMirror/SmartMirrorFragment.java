@@ -150,7 +150,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private void sync(View v){
+    private void sync(View v) {
         Toast.makeText(v.getContext(), "Syncing with mirror...", Toast.LENGTH_LONG).show();
         WebSocketBase ws = new WebSocketBase();
         Gson gson = new Gson();

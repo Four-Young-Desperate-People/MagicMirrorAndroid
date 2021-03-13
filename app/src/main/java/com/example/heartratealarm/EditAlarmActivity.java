@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -104,11 +105,17 @@ public class EditAlarmActivity extends AppCompatActivity {
 
         if (requestCode == REQ_PICK_ALARM) {
             alarm.songPath = path;
-            // TODO: LIST SONG NAME
+            Button btnAlarmSong = this.findViewById(R.id.alarmMusicButton);
+            if (alarm.songPath != null) {
+                btnAlarmSong.setText("Alarm Song: " + getSongName(alarm.songPath));
+            }
         }
         if (requestCode == REQ_PICK_EXERCISE) {
             alarm.exercisePath = path;
-            // TODO: LIST SONG NAME
+            Button btnExerciseSong = this.findViewById(R.id.exerciseMusicButton);
+            if (alarm.exercisePath != null) {
+                btnExerciseSong.setText("Exercise Song: " + getSongName(alarm.exercisePath));
+            }
         }
     }
 
@@ -145,7 +152,9 @@ public class EditAlarmActivity extends AppCompatActivity {
         timeCountdown.setText("Ring in: " + alarm.timeToRun());
 
         Button btnAlarmSong = this.findViewById(R.id.alarmMusicButton);
-        //TODO: SET SONG
+        if (alarm.songPath != null) {
+            btnAlarmSong.setText("Alarm Song: " + getSongName(alarm.songPath));
+        }
         btnAlarmSong.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -153,7 +162,9 @@ public class EditAlarmActivity extends AppCompatActivity {
         });
 
         Button btnExerciseSong = this.findViewById(R.id.exerciseMusicButton);
-        //TODO: SET SONG WORDS
+        if (alarm.exercisePath != null) {
+            btnExerciseSong.setText("Exercise Song: " + getSongName(alarm.exercisePath));
+        }
         btnExerciseSong.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -180,18 +191,21 @@ public class EditAlarmActivity extends AppCompatActivity {
 
         Slider sliderAlarmVolume = this.findViewById(R.id.alarmVolumeSlider);
         sliderAlarmVolume.setValue(alarm.alarmVolume * 100);
-        sliderAlarmVolume.addOnChangeListener((slider, value, fromUser) -> alarm.alarmVolume = (float)(value / 100.0));
+        sliderAlarmVolume.addOnChangeListener((slider, value, fromUser) -> alarm.alarmVolume = (float) (value / 100.0));
 
         Slider sliderExerciseVolume = this.findViewById(R.id.exerciseVolumeSlider);
         sliderExerciseVolume.setValue(alarm.exerciseVolume * 100);
-        sliderExerciseVolume.addOnChangeListener((slider, value, fromUser) -> alarm.exerciseVolume = (float)(value / 100.0));
+        sliderExerciseVolume.addOnChangeListener((slider, value, fromUser) -> alarm.exerciseVolume = (float) (value / 100.0));
 
         Slider sliderHr = this.findViewById(R.id.hrSlider);
         sliderHr.setValue(alarm.hrTarget);
-        sliderHr.addOnChangeListener((slider, value, fromUser) -> alarm.hrTarget = (int)value);
+        sliderHr.addOnChangeListener((slider, value, fromUser) -> alarm.hrTarget = (int) value);
 
         Button clearExerciseMusicButton = this.findViewById(R.id.clearExerciseMusicButton);
-        clearExerciseMusicButton.setOnClickListener(v -> alarm.exercisePath = null);
+        clearExerciseMusicButton.setOnClickListener(v -> {
+            alarm.exercisePath = null;
+            btnExerciseSong.setText("EXERCISE MUSIC");
+        });
 
         SwitchMaterial vibrateSwitch = this.findViewById(R.id.vibrateSwitch);
         vibrateSwitch.setChecked(alarm.vibrate);
@@ -244,6 +258,17 @@ public class EditAlarmActivity extends AppCompatActivity {
     }
 
     private String getSongName(String path) {
-        return "SONG NAME HERE";
+        Uri song = Uri.parse(path);
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(getApplicationContext(), song);
+        String name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        Log.d(TAG, "getSongName: " + name);
+        return name;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Toast.makeText(getApplicationContext(), "Alarm not saved", Toast.LENGTH_SHORT).show();
     }
 }

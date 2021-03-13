@@ -30,7 +30,6 @@ import com.example.heartratealarm.MainActivity;
 import com.example.heartratealarm.R;
 import com.example.heartratealarm.websocket.GenericData;
 import com.example.heartratealarm.websocket.WebSocketBase;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -98,12 +97,12 @@ public class Alarm {
         return AlarmDatabase.getInstance(context).alarmDao().getAlarmByID(id);
     }
 
-    // TODO: There is a discrepancy between loadAlarm and loadAll Alarms here
     public static Single<Alarm> loadAlarm(int id, Context context) {
         return Single.fromCallable(() -> searchAlarm(id, context)).subscribeOn(Schedulers.io()).map(l -> l.get(0));
     }
 
     // Main logic that is called when the alarm is running, since called from an intent, static
+    // TODO: May be a good idea to have recurrent alarms, we currently just disable the alarm after
     public static void runAlarm(Context context, Intent intent) {
         // Get alarm information from SQL
         int alarmID = intent.getExtras().getInt("ID");
@@ -113,7 +112,7 @@ public class Alarm {
         // Actual Alarm Running Happens Here
         Disposable disposable = alarmSingle.observeOn(AndroidSchedulers.mainThread()).subscribe(runningAlarm -> {
             // Check to see if the alarm is actually disabled
-            if (!runningAlarm.enabled){
+            if (!runningAlarm.enabled) {
                 return;
             }
 
@@ -122,9 +121,10 @@ public class Alarm {
             am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
             // TODO: disable volume buttons
 
+            // TODO: fix vibrating
             // Begin Vibrating if Vibrating is on
             Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            if (runningAlarm.vibrate){
+            if (runningAlarm.vibrate) {
                 Log.d(TAG, "runAlarm: I GOTTA VIBE");
                 vibe.vibrate(VibrationEffect.createWaveform(new long[]{0, 1000, 1000}, 0));
             }
@@ -158,8 +158,8 @@ public class Alarm {
             // Make a window, TODO: test with lock screen
             WindowManager.LayoutParams
                     p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                                                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                                                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
             WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View myView = inflater.inflate(R.layout.activity_alarm, null);
@@ -219,7 +219,7 @@ public class Alarm {
                 btnDismiss.setText("DISMISS");
                 btnDismiss.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.purple_500));
             }, () -> {
-                Log.i(TAG, "Completed recieving from websocket completed");
+                Log.i(TAG, "Completed receiving from websocket completed");
             });
 
             ws.interval(s -> {
@@ -288,7 +288,7 @@ public class Alarm {
         Log.d(TAG, "enableAlarm: " + calendar.getTimeInMillis());
     }
 
-    public void disableAlarm(Activity activity){
+    public void disableAlarm(Activity activity) {
         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(activity, AlarmReceiver.class);
         intent.putExtra("ID", id);
@@ -296,7 +296,7 @@ public class Alarm {
         alarmManager.cancel(pendingIntent);
     }
 
-    public Disposable deleteAlarm(Context context){
+    public Disposable deleteAlarm(Context context) {
         return Single.just(this).subscribeOn(Schedulers.io()).subscribe(t -> {
             AlarmDao alarmDao = AlarmDatabase.getInstance(context).alarmDao();
             Log.d(TAG, "deleteAlarm: " + t.id);

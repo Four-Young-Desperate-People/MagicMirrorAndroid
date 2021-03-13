@@ -92,6 +92,9 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         final float scale = getResources().getDisplayMetrics().density;
         for (Alarm alarm : alarmList) {
             Log.d(TAG, alarm.toString());
+            if (alarm.enabled) {
+                alarm.enableAlarm(requireActivity());
+            }
             MaterialCardView alarmCard = new MaterialCardView(requireContext());
             LinearLayout cardLayout = new LinearLayout(requireContext());
             cardLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -104,7 +107,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
             enabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 alarm.enabled = isChecked;
                 writerDisposable = alarm.updateAlarm(requireContext(), requireActivity());
-                if (!isChecked){
+                if (!isChecked) {
                     alarm.disableAlarm(requireActivity());
                 }
             });
