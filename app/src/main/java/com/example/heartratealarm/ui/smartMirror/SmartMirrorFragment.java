@@ -28,7 +28,8 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
     private static final String TAG = "SmartMirrorSettings";
     MagicMirrorUISettings settings = new MagicMirrorUISettings();
     private SmartMirrorViewModel smartMirrorViewModel = new SmartMirrorViewModel();
-    Disposable d;
+    private Disposable d;
+    private WebSocketBase ws;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         root.findViewById(R.id.cardBottomRight).setOnClickListener(this);
         root.findViewById(R.id.btnSaveMirror).setOnClickListener(this);
 
+        ws = new WebSocketBase();
         sync(root);
         return root;
     }
@@ -152,20 +154,24 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
 
     private void sync(View v) {
         Toast.makeText(v.getContext(), "Syncing with mirror...", Toast.LENGTH_LONG).show();
-        WebSocketBase ws = new WebSocketBase();
         Gson gson = new Gson();
         GenericData<Boolean> gd = new GenericData("get_modules_display", false);
         String json = gson.toJson(gd);
-        // TODO: disposing this onDestroy actually crashes the application if we're still in the middle of a sync
         d = ws.getMessageObservable().map(s -> {
+            if (!s.isPresent()) {
+                Log.i(TAG, "Got an empty");
+                return false;
+            }
             Log.i(TAG, "We got data from the Pi");
-            settings.fromJson(s);
+            settings.fromJson(s.get());
             return true;
         }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(a -> {
-                    populate(v.getRootView());
-                    ws.close();
-                    Log.d(TAG, "sync: done!");
+                .subscribe(good -> {
+                    if (good) {
+                        populate(v.getRootView());
+                        ws.close();
+                        Log.d(TAG, "sync: done!");
+                    }
                 }, e -> {
                     Log.e(TAG, "Got an error trying to read data from Pi", e);
                     Toast.makeText(v.getContext(), "Could not find mirror!", Toast.LENGTH_SHORT).show();
@@ -183,5 +189,6 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         if (d != null && !d.isDisposed()) {
             d.dispose();
         }
+        ws.close();
     }
 }

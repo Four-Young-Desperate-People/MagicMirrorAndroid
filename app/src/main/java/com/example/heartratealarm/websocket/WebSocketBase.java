@@ -2,6 +2,7 @@ package com.example.heartratealarm.websocket;
 
 import android.util.Log;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -17,8 +18,8 @@ import okio.ByteString;
 
 public class WebSocketBase extends WebSocketListener {
     private static final String TAG = "WebSocketBase2";
-    private static final String ENDPOINT = "ws://192.168.1.77:3683/android";
-    //private static final String ENDPOINT = "ws://192.168.1.92:3683/android";
+    //private static final String ENDPOINT = "ws://192.168.1.77:3683/android";
+    private static final String ENDPOINT = "ws://192.168.1.142:3683/android";
     private final Object messageLock;
     private String message;
     private final Object stopLock;
@@ -49,22 +50,28 @@ public class WebSocketBase extends WebSocketListener {
     }
 
     public void close() {
+        webSocket.cancel();
         webSocket.close(1000, null);
     }
 
-    private String getMessage() throws InterruptedException {
+    private Optional<String> getMessage() {
         synchronized (messageLock) {
-            messageLock.wait();
+            try {
+                messageLock.wait();
+            } catch (InterruptedException e) {
+                Log.d(TAG, "Got a Thread interupt exception. Nothing to see here", e);
+                return Optional.empty();
+            }
             synchronized (stopLock) {
                 if (stop) {
-                    return null;
+                    return Optional.empty();
                 }
             }
-            return message;
+            return Optional.of(message);
         }
     }
 
-    public Observable<String> getMessageObservable() {
+    public Observable<Optional<String>> getMessageObservable() {
         return Observable.fromCallable(this::getMessage).repeatUntil(() -> {
             synchronized (stopLock) {
                 return stop;
@@ -115,7 +122,7 @@ public class WebSocketBase extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        Log.e(TAG, "had a websocket oopsie", t);
+        Log.d(TAG, "had a websocket oopsie", t);
         synchronized (stopLock) {
             stop = true;
         }

@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -192,7 +191,13 @@ public class Alarm {
                 ws.close();
             };
 
-            Disposable messageDisposable = ws.getMessageObservable().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+            Disposable messageDisposable = ws.getMessageObservable().observeOn(AndroidSchedulers.mainThread()).subscribe(os -> {
+                if (!os.isPresent()) {
+                    return;
+                }
+
+                String s = os.get();
+
                 GenericData gd = gson.fromJson(s, GenericData.class);
                 if (gd.method.equals("pong")) {
                     missedCount.set(0);
