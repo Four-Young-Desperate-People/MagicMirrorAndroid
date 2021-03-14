@@ -144,7 +144,7 @@
             android:layout_height="0dp"
             android:stepSize="1"
             android:value="90"
-            android:valueFrom="60"
+            android:valueFrom="30"
             android:valueTo="140"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

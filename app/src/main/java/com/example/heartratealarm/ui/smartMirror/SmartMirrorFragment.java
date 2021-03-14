@@ -160,7 +160,6 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         d = ws.getMessageObservable().map(s -> {
             if (!s.isPresent()) {
                 Log.i(TAG, "Got an empty");
-                return false;
             }
             Log.i(TAG, "We got data from the Pi");
             settings.fromJson(s.get());

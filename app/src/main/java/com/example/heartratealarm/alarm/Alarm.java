@@ -180,7 +180,7 @@ public class Alarm {
 
             Disposable messageDisposable = ws.getMessageObservable().observeOn(AndroidSchedulers.mainThread()).subscribe(os -> {
                 if (!os.isPresent()) {
-                    return;
+                    throw new Exception("Whoops...");
                 }
 
                 String s = os.get();
