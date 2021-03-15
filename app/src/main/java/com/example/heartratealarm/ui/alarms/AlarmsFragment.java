@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +47,12 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 new ViewModelProvider(this).get(AlarmsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_alarms, container, false);
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
-        // TODO: remove magic button
-        root.findViewById(R.id.magicButton).setOnClickListener(this);
+        // TODO: debugging button
+        Button magicButton = root.findViewById(R.id.magicButton);
+        magicButton.setOnClickListener(this);
+        magicButton.setVisibility(View.GONE);
+
+
 
         // populate our list of alarms
         readerDisposable = Single.just(requireContext()).subscribeOn(Schedulers.io()).map(c -> {

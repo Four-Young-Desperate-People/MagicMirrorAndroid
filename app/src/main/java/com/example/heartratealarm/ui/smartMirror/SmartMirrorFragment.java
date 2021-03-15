@@ -45,7 +45,6 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         root.findViewById(R.id.cardBottomRight).setOnClickListener(this);
         root.findViewById(R.id.btnSaveMirror).setOnClickListener(this);
 
-        ws = new WebSocketBase();
         sync(root);
         return root;
     }
@@ -157,12 +156,15 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
         Gson gson = new Gson();
         GenericData<Boolean> gd = new GenericData("get_modules_display", false);
         String json = gson.toJson(gd);
+        ws = new WebSocketBase();
         d = ws.getMessageObservable().map(s -> {
             if (!s.isPresent()) {
                 Log.i(TAG, "Got an empty");
+                return false;
             }
             Log.i(TAG, "We got data from the Pi");
             settings.fromJson(s.get());
+            Log.d(TAG, "sync: " + s.get());
             return true;
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(good -> {
@@ -174,7 +176,7 @@ public class SmartMirrorFragment extends Fragment implements View.OnClickListene
                 }, e -> {
                     Log.e(TAG, "Got an error trying to read data from Pi", e);
                     Toast.makeText(v.getContext(), "Could not find mirror!", Toast.LENGTH_SHORT).show();
-                    ws.close();
+                    ws.cancel();
                 });
 
         // Need to set up the listener before we send, otherwise we have a race condition and

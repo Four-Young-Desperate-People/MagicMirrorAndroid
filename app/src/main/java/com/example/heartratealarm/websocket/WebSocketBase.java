@@ -51,8 +51,11 @@ public class WebSocketBase extends WebSocketListener {
     }
 
     public void close() {
-        webSocket.cancel();
         webSocket.close(1000, null);
+    }
+
+    public void cancel(){
+        webSocket.cancel();
     }
 
     private Optional<String> getMessage() {
