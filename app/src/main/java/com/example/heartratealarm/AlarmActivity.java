@@ -23,7 +23,6 @@ public class AlarmActivity extends AppCompatActivity {
         btnDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: dismiss Alarm from Alarm Class
                 Log.d(TAG, "Alarm: Dismissing alarm");
                 Intent intent = new Intent(context, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -104,7 +104,6 @@ public class Alarm {
     }
 
     // Main logic that is called when the alarm is running, since called from an intent, static
-    // TODO: May be a good idea to have recurrent alarms, we currently just disable the alarm after
     public static void runAlarm(Context context, Intent intent) {
         // Get alarm information from SQL
         int alarmID = intent.getExtras().getInt("ID");
@@ -121,7 +120,6 @@ public class Alarm {
             AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             int OGVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
             am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-            // TODO: disable volume buttons
 
             // Set up Media Players for Alarm Music
             Uri alarmSong = Uri.parse(runningAlarm.songPath);
@@ -149,7 +147,7 @@ public class Alarm {
             Log.d(TAG, "runAlarm: playing music");
             alarmMp.start();
 
-            // Make a window, TODO: test with lock screen
+            // Make a window,
             WindowManager.LayoutParams
                     p = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -195,7 +193,6 @@ public class Alarm {
                     Type type = new TypeToken<GenericData<Boolean>>() {
                     }.getType();
                     GenericData<Boolean> shouldWeQuite = gson.fromJson(s, type);
-                    // TODO: fix the exercise music volume here
                     if (shouldWeQuite.data) {
                         alarmMp.stop();
                         if (hasExerciseSong) {
@@ -276,7 +273,7 @@ public class Alarm {
         Log.d(TAG, "enableAlarm: " + getUnixTime());
     }
 
-    //TODO: DELETE CUZ THIS IS DEBUG CODE
+    //For debugging
     public void enableAlarm(Activity activity, Calendar calendar) {
         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(activity, AlarmReceiver.class);

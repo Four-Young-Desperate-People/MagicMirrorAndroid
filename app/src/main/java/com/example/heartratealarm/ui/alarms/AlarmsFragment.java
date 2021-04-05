@@ -47,7 +47,7 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
                 new ViewModelProvider(this).get(AlarmsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_alarms, container, false);
         root.findViewById(R.id.newAlarmButton).setOnClickListener(this);
-        // TODO: debugging button
+//         debugging button
         Button magicButton = root.findViewById(R.id.magicButton);
         magicButton.setOnClickListener(this);
         magicButton.setVisibility(View.GONE);
@@ -69,7 +69,6 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-//      TODO: Android says that Resource IDs will be non-final, recommends using if-else?
         switch (view.getId()) {
             case R.id.newAlarmButton:
                 Log.d(TAG, "newAlarmButton Pressed, switching to NewAlarm Activity");
@@ -90,7 +89,6 @@ public class AlarmsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    // TODO: where ya'll make the list of all alarms
     public void listAlarms() {
         LinearLayout alarmsList = requireView().findViewById(R.id.alarmsList);
         int count = 0;

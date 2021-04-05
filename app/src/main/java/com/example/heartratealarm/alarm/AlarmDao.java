@@ -10,7 +10,6 @@ import java.util.List;
 
 @Dao
 public interface AlarmDao {
-    // TODO: sort by enabled, then next_run
     @Query("SELECT * FROM alarms ORDER BY enabled, hour_of_day, minute")
     List<Alarm> getAll();
 
